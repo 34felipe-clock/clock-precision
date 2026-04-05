@@ -3,263 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center Pro - v1.5.3</title>
+    <title>Command Center Pro - v2.0.9</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent-color: #00ff41; 
-            --bg-dark: #0a0c0f; 
+            --bg-dark: #06080a; 
             --font-main: 'Courier New', Courier, monospace; 
-            --glass-bg: rgba(20, 25, 30, 0.65);
-            --glass-blur: blur(20px);
+            --glass-bg: rgba(10, 12, 15, 0.85);
+            --glass-blur: blur(25px);
             --inner-glow: inset 0 0 15px rgba(0, 255, 65, 0.2);
         }
 
         body {
-            margin: 0;
-            background: radial-gradient(circle at 20% 30%, #1a1e29 0%, var(--bg-dark) 70%);
-            font-family: 'Inter', sans-serif;
-            color: white;
-            overflow: hidden;
-            height: 100vh;
+            margin: 0; background: var(--bg-dark);
+            font-family: 'Inter', sans-serif; color: white;
+            overflow: hidden; height: 100vh;
         }
 
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; opacity: 0.5; }
+
         #widget-container {
-            position: absolute;
-            top: 48%;
-            left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 5;
-            width: 95%;
-            max-width: 650px;
+            display: flex; flex-direction: column; align-items: center;
+            z-index: 5; width: 95%; max-width: 700px;
         }
 
         #relogio {
-            font-family: var(--font-main);
-            font-size: 3.5rem; 
-            font-weight: bold;
-            padding: 30px; 
-            border-radius: 20px; 
-            width: 100%;
-            box-sizing: border-box;
-            color: var(--accent-color);
-            border: 2px solid var(--accent-color); 
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), var(--inner-glow);
-            display: flex; justify-content: center; align-items: baseline;
-            position: relative;
+            font-family: var(--font-main); font-size: 3.5rem; font-weight: bold;
+            padding: 30px; border-radius: 20px; width: 100%; box-sizing: border-box;
+            color: var(--accent-color); border: 2px solid var(--accent-color); 
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9), var(--inner-glow);
+            display: flex; justify-content: center; align-items: baseline; position: relative;
         }
 
-        #shortcuts-hub {
-            display: flex;
-            gap: 25px;
-            margin-top: -10px;
-            margin-bottom: 20px;
-            z-index: 6;
-        }
-        .shortcut-wrapper { display: flex; flex-direction: column; align-items: center; text-decoration: none; gap: 8px; cursor: pointer; }
-        .shortcut-icon {
-            background: var(--glass-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 45px; height: 45px;
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            transition: all 0.3s;
-            color: white; font-size: 1.1rem;
-            backdrop-filter: blur(5px);
-            font-weight: bold;
-        }
-        .shortcut-label { font-size: 0.6rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; transition: color 0.3s; }
-        .shortcut-wrapper:hover .shortcut-icon { border-color: var(--accent-color); transform: translateY(-5px); box-shadow: 0 0 15px var(--accent-color); color: var(--accent-color); }
-        .shortcut-wrapper:hover .shortcut-label { color: var(--accent-color); }
-        .shortcut-icon svg { width: 22px; height: 22px; fill: white; transition: fill 0.3s; }
-        .shortcut-wrapper:hover .shortcut-icon svg { fill: var(--accent-color); }
+        #btn-settings { position: absolute; left: 15px; top: 15px; background: none; border: none; color: #444; cursor: pointer; font-size: 1.3rem; transition: 0.3s; }
+        #btn-settings:hover { color: white; }
 
         #info-panel {
-            margin-top: 15px;
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
-            width: 100%;
-            box-sizing: border-box;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;
+            width: 100%; box-sizing: border-box; margin-top: 15px;
         }
 
-        #finance-bar {
-            display: flex; justify-content: space-around; flex-wrap: wrap;
-            padding: 12px; background: rgba(0,0,0,0.3);
-            border-radius: 10px; margin-bottom: 15px; gap: 10px;
+        /* CLIMA INTERATIVO */
+        #weather-btn {
+            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;
+            cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px;
         }
-        .finance-item { text-align: center; }
-        .finance-item span { color: #888; display: block; font-size: 0.6rem; text-transform: uppercase; margin-bottom: 3px; font-weight: bold; }
-        .finance-item b { font-size: 0.8rem; color: #fff; }
+        #weather-btn:hover { border-color: var(--accent-color); background: rgba(0,255,65,0.05); }
+        .weather-detail { font-size: 0.6rem; color: #888; text-transform: uppercase; font-weight: bold; text-align: center; }
+        .weather-detail b { color: #fff; display: block; font-size: 0.85rem; margin-top: 3px; }
 
-        .row-center { display: flex; justify-content: center; gap: 20px; font-weight: bold; color: var(--accent-color); margin-bottom: 15px; }
+        /* MODAL PREVISÃO 7 DIAS */
+        #weather-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border: 2px solid var(--accent-color); padding: 30px; border-radius: 20px;
+            z-index: 2000; display: none; flex-direction: column; width: 95%; max-width: 650px;
+            box-shadow: 0 0 100px rgba(0,0,0,1); transition: 0.3s ease; opacity: 0;
+        }
+        #weather-modal.active { display: flex; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        .forecast-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 25px; }
+        .forecast-item { text-align: center; }
+        .forecast-day-name { font-size: 0.55rem; color: #888; text-transform: uppercase; font-weight: bold; }
+        .forecast-date { font-size: 0.5rem; color: #555; display: block; margin-bottom: 5px; }
+        .forecast-icon { font-size: 1.3rem; display: block; margin: 8px 0; }
+        .forecast-temp { font-size: 0.8rem; color: var(--accent-color); font-weight: bold; }
 
-        #world-clocks { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; gap: 10px; }
-        .city-select { background: transparent; border: none; color: #888; font-size: 0.65rem; text-transform: uppercase; cursor: pointer; font-family: inherit; outline: none; text-align-last: center; }
+        #finance-bar { display: flex; justify-content: space-around; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 15px; }
+        .finance-item { text-align: center; font-size: 0.6rem; color: #888; text-transform: uppercase; }
+        .finance-item b { color: #fff; display: block; font-size: 0.8rem; }
+
+        #converter-tool {
+            background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px;
+            margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        #converter-input { background: #000; border: 1px solid var(--accent-color); color: #fff; width: 75px; padding: 5px; text-align: center; border-radius: 4px; outline: none; font-family: var(--font-main); }
+
+        .status-row { display: flex; justify-content: center; gap: 30px; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; color: var(--accent-color); }
+
+        #world-clocks { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 5px; }
+        .city-select { background: transparent; border: none; color: #555; font-size: 0.6rem; text-transform: uppercase; outline: none; text-align-last: center; cursor: pointer; font-family: inherit; }
         .city-time { font-size: 1.1rem; color: var(--accent-color); font-weight: bold; text-align: center; }
 
         #status-footer {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            font-size: 0.65rem;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: center; gap: 20px; font-size: 0.65rem; color: #444; text-transform: uppercase;
         }
-        .status-item { display: flex; align-items: center; gap: 6px; }
-
-        /* VERSION TAG */
-        #version-tag {
-            position: fixed;
-            bottom: 45px;
-            right: 15px;
-            font-size: 0.6rem;
-            color: #444;
-            background: rgba(0,0,0,0.2);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: var(--font-main);
-            letter-spacing: 1px;
-            z-index: 90;
-            border: 1px solid rgba(255,255,255,0.03);
-        }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: #ff5252; margin-right: 5px; }
+        .status-online { background: #4caf50; box-shadow: 0 0 8px #4caf50; }
 
         #sidebar {
-            position: fixed; right: -320px; top: 0;
-            width: 310px; height: 100vh;
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            border-left: 2px solid var(--accent-color);
-            transition: right 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-            z-index: 1000; padding: 20px; box-sizing: border-box;
+            position: fixed; right: -320px; top: 0; width: 310px; height: 100vh;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border-left: 2px solid var(--accent-color); transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); z-index: 1000; padding: 25px; box-sizing: border-box;
             display: flex; flex-direction: column;
         }
         #sidebar.active { right: 0; }
         #sidebar-trigger {
             position: fixed; right: 0; top: 50%; transform: translateY(-50%);
-            background: var(--accent-color); color: black;
-            padding: 20px 6px; border-radius: 10px 0 0 10px;
-            cursor: pointer; font-weight: bold; font-size: 0.7rem;
-            writing-mode: vertical-rl; z-index: 1001; letter-spacing: 2px;
+            background: var(--accent-color); color: #000; padding: 20px 6px;
+            border-radius: 10px 0 0 10px; cursor: pointer; font-weight: bold; font-size: 0.65rem; writing-mode: vertical-rl; z-index: 1001; letter-spacing: 2px;
         }
-
         .sidebar-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .tab-btn { background: none; border: none; color: #666; cursor: pointer; font-weight: bold; font-size: 0.8rem; padding: 5px 10px; transition: 0.3s; }
+        .tab-btn { background: none; border: none; color: #555; cursor: pointer; font-weight: bold; font-size: 0.75rem; padding: 5px; }
         .tab-btn.active { color: var(--accent-color); border-bottom: 2px solid var(--accent-color); }
-
-        .sidebar-content { flex-grow: 1; display: none; overflow-y: auto; }
+        .sidebar-content { display: none; flex-grow: 1; overflow-y: auto; }
         .sidebar-content.active { display: block; }
-        #notes-area { width: 100%; height: 80%; background: transparent; border: none; color: #eee; font-family: inherit; resize: none; outline: none; font-size: 0.95rem; line-height: 1.6; }
-        
-        #task-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: white; border-radius: 5px; outline: none; margin-bottom: 15px; }
-        #task-list { list-style: none; padding: 0; }
-        .task-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 5px; margin-bottom: 8px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.05); }
-        .task-item.done { opacity: 0.4; text-decoration: line-through; }
-        .task-actions { display: flex; gap: 10px; }
-        .task-btn { background: none; border: none; cursor: pointer; font-size: 1rem; }
-
-        #news-ticker-container {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            border-top: 1px solid var(--accent-color);
-            padding: 8px 0; z-index: 100; overflow: hidden;
-            white-space: nowrap; font-size: 0.85rem; font-weight: bold;
-        }
-        #news-ticker { display: inline-block; animation: ticker-scroll 90s linear infinite; color: #ccc; }
-        #news-ticker span { margin-right: 50px; color: white; }
-        #news-ticker span::before { content: "•"; color: var(--accent-color); margin-right: 10px; }
-
-        @keyframes ticker-scroll {
-            0% { transform: translateX(100vw); }
-            100% { transform: translateX(-100%); }
-        }
 
         #settings-menu {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: var(--glass-bg); backdrop-filter: var(--glass-blur);
             border: 2px solid var(--accent-color); padding: 25px; border-radius: 15px;
             z-index: 10000; display: none; flex-direction: column; gap: 15px; width: 280px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), var(--inner-glow);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9), var(--inner-glow);
         }
+        #settings-menu label { font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
 
-        #btn-settings { position: absolute; left: 15px; top: 15px; background: none; border: none; color: #555; cursor: pointer; font-size: 1.3rem; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: #ff5252; margin-right: 5px; }
-        .status-online { background: #4caf50; box-shadow: 0 0 10px #4caf50; }
+        #news-ticker-container { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid var(--accent-color); padding: 8px 0; overflow: hidden; white-space: nowrap; font-size: 0.8rem; z-index: 100; font-weight: bold; }
+        #news-ticker { display: inline-block; animation: ticker-scroll 90s linear infinite; color: #ccc; }
+        @keyframes ticker-scroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+
+        #version-tag { position: fixed; bottom: 45px; right: 15px; font-size: 0.6rem; color: #444; font-family: var(--font-main); z-index: 90; }
 
         @media (max-width: 600px) {
             #relogio { font-size: 2.2rem; }
-            #finance-bar { grid-template-columns: 1fr 1fr; }
-            #world-clocks { grid-template-columns: 1fr; }
-            #version-tag { bottom: 50px; right: 5px; font-size: 0.5rem; }
+            .forecast-grid { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
 </head>
 <body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="weather-modal">
+        <h3 style="margin:0; color:var(--accent-color); text-align:center; letter-spacing:2px;">PREVISÃO: PRÓXIMA SEMANA</h3>
+        <div id="forecast-grid" class="forecast-grid"></div>
+        <button onclick="toggleWeatherModal()" style="margin-top:30px; width:100%; padding:12px; background:var(--accent-color); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">FECHAR PREVISÃO</button>
+    </div>
 
     <div id="sidebar-trigger" onclick="toggleSidebar()">CENTRO DE COMANDO</div>
     <div id="sidebar">
         <div class="sidebar-tabs">
             <button class="tab-btn active" onclick="showTab('notes', event)">NOTAS</button>
             <button class="tab-btn" onclick="showTab('tasks', event)">TAREFAS</button>
+            <button class="tab-btn" onclick="showTab('sec', event)">SEGURANÇA</button>
         </div>
-        <div id="tab-notes" class="sidebar-content active">
-            <textarea id="notes-area" placeholder="Anotações rápidas..."></textarea>
-        </div>
-        <div id="tab-tasks" class="sidebar-content">
-            <input type="text" id="task-input" placeholder="Nova tarefa + Enter" onkeypress="handleTask(event)">
-            <ul id="task-list"></ul>
-        </div>
-        <button onclick="toggleSidebar()" style="margin-top:20px; background:var(--accent-color); color:black; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; width:100%;">FECHAR</button>
+        <div id="tab-notes" class="sidebar-content active"><textarea id="notes-area" style="width:100%; height:80%; background:transparent; border:none; color:#eee; font-family:inherit; resize:none; outline:none; line-height:1.6;"></textarea></div>
+        <div id="tab-tasks" class="sidebar-content"><input type="text" id="task-input" placeholder="+ Tarefa" onkeypress="handleTask(event)" style="width:100%; padding:8px; background:#000; border:1px solid #333; color:#fff; border-radius:4px;"><ul id="task-list" style="padding:0; list-style:none; margin-top:10px;"></ul></div>
+        <div id="tab-sec" class="sidebar-content"><div style="text-align:center; background:rgba(0,0,0,0.3); padding:15px; border-radius:10px;"><div id="generated-pass" style="font-family:var(--font-main); color:var(--accent-color); margin:15px 0; font-size:1.1rem; word-break:break-all;">********</div><button onclick="generatePass()" style="background:var(--accent-color); border:none; padding:10px; width:100%; font-weight:bold; cursor:pointer; border-radius:5px;">GERAR NOVA SENHA</button></div></div>
+        <button onclick="toggleSidebar()" style="margin-top:auto; width:100%; padding:12px; background:var(--accent-color); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">FECHAR</button>
+    </div>
+
+    <div id="settings-menu">
+        <label>FORMATO 24H <input type="checkbox" id="check-24h" checked></label>
+        <label>MILISSEGUNDOS <input type="checkbox" id="check-ms" checked></label>
+        <label>MODO MANUAL <input type="checkbox" id="check-manual"></label>
+        <label>COR NEON:
+            <select id="select-color" onchange="aplicarCor(this.value)" style="background:#000; color:white; padding:5px; border-radius:4px; border:1px solid #555;">
+                <option value="#00ff41">VERDE</option>
+                <option value="#00ffff">CIANO</option>
+                <option value="#ffbf00">OURO</option>
+                <option value="#ff00ff">ROSA</option>
+                <option value="#6A1B9A">ROXO</option>
+            </select>
+        </label>
+        <button onclick="toggleSettings()" style="margin-top:10px; background:var(--accent-color); color:black; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:5px;">FECHAR</button>
     </div>
 
     <div id="widget-container">
-        <div id="shortcuts-hub">
-            <a href="https://google.com" target="_blank" class="shortcut-wrapper"><div class="shortcut-icon">G</div><span class="shortcut-label">Google</span></a>
-            <a href="https://youtube.com" target="_blank" class="shortcut-wrapper"><div class="shortcut-icon">Y</div><span class="shortcut-label">YouTube</span></a>
-            <a href="https://web.whatsapp.com" target="_blank" class="shortcut-wrapper"><div class="shortcut-icon">W</div><span class="shortcut-label">WhatsApp</span></a>
-            <a href="https://gemini.google.com" target="_blank" class="shortcut-wrapper">
-                <div class="shortcut-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11 2H13V6H11V2ZM11 18H13V22H11V18ZM2 11V13H6V11H2ZM18 11V13H22V11H18ZM11 11H13V13H11V11ZM3.75 3.75L5.25 5.25L5.25 3.75L3.75 3.75ZM20.25 20.25L18.75 18.75L18.75 20.25L20.25 20.25ZM3.75 20.25L5.25 18.75L3.75 18.75L3.75 20.25ZM20.25 3.75L18.75 5.25L20.25 5.25L20.25 3.75Z"/>
-                    </svg>
-                </div>
-                <span class="shortcut-label">Gemini</span>
-            </a>
-        </div>
-
         <div id="relogio">
             <button id="btn-settings" onclick="toggleSettings()">⚙</button>
-            <span id="tempo-principal">00:00:00</span><span style="font-size:0.5em; margin-left:5px; opacity:0.7;" id="ms-display">.000</span>
+            <span id="tempo-principal">00:00:00</span><span id="ms-display" style="font-size:0.4em; margin-left:8px; opacity:0.6;">.000</span>
         </div>
         
         <div id="info-panel">
-            <div id="data-extensa" style="font-size: 1.2rem; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; text-transform: capitalize; text-align:center;">---</div>
+            <div id="weather-btn" onclick="toggleWeatherModal()">
+                <div class="weather-detail">LOCAL 📍 <b id="loc-txt">BUSCANDO...</b></div>
+                <div class="weather-detail">CLIMA 🌤️ <b id="temp-txt">--°C</b></div>
+                <div class="weather-detail">VENTO 💨 <b id="wind-txt">-- KM/H</b></div>
+                <div class="weather-detail">UMIDADE 💧 <b id="hum-txt">--%</b></div>
+            </div>
             
             <div id="finance-bar">
-                <div class="finance-item"><span>BRL</span> <b id="val-brl">--</b></div>
-                <div class="finance-item"><span>USD</span> <b id="val-usd">--</b></div>
-                <div class="finance-item"><span>EUR</span> <b id="val-eur">--</b></div>
-                <div class="finance-item"><span>GBP</span> <b id="val-gbp">--</b></div>
-                <div class="finance-item"><span>BTC</span> <b id="val-btc">--</b></div>
+                <div class="finance-item">BRL-USD <b id="v-brl">--</b></div>
+                <div class="finance-item">USD-BRL <b id="v-usd">--</b></div>
+                <div class="finance-item">EUR-BRL <b id="v-eur">--</b></div>
+                <div class="finance-item">GBP-BRL <b id="v-gbp">--</b></div>
+                <div class="finance-item">BTC-USD <b id="v-btc">--</b></div>
             </div>
 
-            <div class="row-center">
-                <div id="bateria">🔋 --%</div>
-                <div id="clima">🌤️ --°C</div>
-                <div id="localizacao">📍 Buscando...</div>
+            <div id="converter-tool">
+                <span style="font-size:0.6rem; color:#666; font-weight:bold;">CALC R$:</span>
+                <input type="number" id="converter-input" value="10" oninput="convert(this.value)">
+                <div class="finance-item" style="font-size:0.7rem; margin-left:10px;">USD: <b id="c-usd">0.00</b></div>
+                <div class="finance-item" style="font-size:0.7rem; margin-left:10px;">EUR: <b id="c-eur">0.00</b></div>
+            </div>
+
+            <div class="status-row">
+                <div id="bat-txt">🔋 BATERIA: --%</div>
             </div>
 
             <div id="world-clocks">
@@ -269,208 +215,150 @@
             </div>
 
             <div id="status-footer">
-                <div class="status-item"><span id="net-dot" class="status-dot"></span> <span id="net-status">OFFLINE</span></div>
-                <div class="status-item">IP: <span id="ip-address" style="color:#888">---.---.---.---</span></div>
-                <div class="status-item" id="sync-status">⚠ SINC: LOCAL</div>
+                <div class="status-item"><span id="net-dot" class="status-dot"></span> <span id="net-status">ONLINE</span></div>
+                <div class="status-item">IP: <span id="ip-txt">---.---.---.---</span></div>
+                <div class="status-item" id="sync-status">SINC: ATÔMICO</div>
             </div>
         </div>
     </div>
 
-    <div id="version-tag">VER: 1.5.3</div>
-
-    <div id="news-ticker-container"><div id="news-ticker">Sincronizando notícias globais...</div></div>
-
-    <div id="settings-menu">
-        <label>Formato 24h <input type="checkbox" id="check-24h"></label>
-        <label>Milissegundos <input type="checkbox" id="check-ms"></label>
-        <label>Modo Manual <input type="checkbox" id="check-manual"></label>
-        <label>Cor:
-            <select id="select-color" style="background:rgba(0,0,0,0.5); color:white; padding:5px; border-radius:4px; border:1px solid #555; outline:none;">
-                <option value="#00ff41">Neon Green</option>
-                <option value="#00ffff">Cyber Cyan</option>
-                <option value="#ffbf00">Gold</option>
-                <option value="#ff00ff">Pink Neon</option>
-                <option value="#6A1B9A">Deep Purple</option>
-            </select>
-        </label>
-        <button onclick="toggleSettings()" style="margin-top:10px; cursor:pointer; background:var(--accent-color); color:black; font-weight:bold; border:none; padding:10px; border-radius:5px;">FECHAR</button>
-    </div>
+    <div id="version-tag">VER: 2.0.9</div>
+    <div id="news-ticker-container"><div id="news-ticker">CONECTANDO AO FEED GLOBAL...</div></div>
 
     <script>
-        let offsetGlobal = 0;
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = []; let offset = 0; let rates = { usd: 0, eur: 0 };
         let tasks = JSON.parse(localStorage.getItem('user_tasks')) || [];
-        const config = {
-            is24h: localStorage.getItem('is24h') !== 'false',
-            showMs: localStorage.getItem('showMs') !== 'false',
-            isManual: localStorage.getItem('isManual') === 'true',
-            accentColor: localStorage.getItem('accentColor') || '#00ff41',
-            tz: [localStorage.getItem('tz1') || 'America/New_York', localStorage.getItem('tz2') || 'Europe/London', localStorage.getItem('tz3') || 'Asia/Tokyo']
-        };
 
-        const zones = [
-            { n: "Nova York", v: "America/New_York" }, { n: "Londres", v: "Europe/London" },
-            { n: "Tóquio", v: "Asia/Tokyo" }, { n: "São Paulo", v: "America/Sao_Paulo" },
-            { n: "Dubai", v: "Asia/Dubai" }, { n: "Hong Kong", v: "Asia/Hong_Kong" },
-            { n: "Berlim", v: "Europe/Berlin" }
-        ];
-
-        function init() {
-            [1,2,3].forEach(i => {
-                const sel = document.getElementById(`tz-${i}`);
-                zones.forEach(z => sel.add(new Option("▼ " + z.n.toUpperCase(), z.v)));
-                sel.value = config.tz[i-1];
-                sel.onchange = (e) => { localStorage.setItem(`tz${i}`, e.target.value); config.tz[i-1] = e.target.value; };
-            });
-
-            document.getElementById('check-24h').checked = config.is24h;
-            document.getElementById('check-ms').checked = config.showMs;
-            document.getElementById('check-manual').checked = config.isManual;
-            document.getElementById('select-color').value = config.accentColor;
-            document.getElementById('notes-area').value = localStorage.getItem('user_notes') || '';
-            
-            document.getElementById('check-24h').onchange = (e) => { config.is24h = e.target.checked; localStorage.setItem('is24h', config.is24h); };
-            document.getElementById('check-ms').onchange = (e) => { config.showMs = e.target.checked; localStorage.setItem('showMs', config.showMs); };
-            document.getElementById('check-manual').onchange = (e) => { config.isManual = e.target.checked; localStorage.setItem('isManual', config.isManual); if(config.isManual) aplicarCor(config.accentColor); };
-            document.getElementById('select-color').onchange = (e) => { config.accentColor = e.target.value; localStorage.setItem('accentColor', config.accentColor); if(config.isManual) aplicarCor(config.accentColor); };
-
-            renderTasks();
-            aplicarCor(config.accentColor);
-            sincronizar();
-            iniciarBateria();
-            buscarPosicaoEClima();
-            fetchFinance();
-            fetchIP();
-            fetchNews();
-            checkNet();
-            rodar(); 
+        function initCanvas() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            particles = []; for(let i=0; i<60; i++) particles.push(new Particle());
         }
+        class Particle {
+            constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.speedX = Math.random()*0.4-0.2; this.speedY = Math.random()*0.4-0.2; }
+            update() { this.x += this.speedX; this.y += this.speedY; if(this.x>canvas.width||this.x<0)this.speedX*=-1; if(this.y>canvas.height||this.y<0)this.speedY*=-1; }
+            draw() { ctx.fillStyle = localStorage.getItem('accentColor') || '#00ff41'; ctx.beginPath(); ctx.arc(this.x,this.y,1.5,0,Math.PI*2); ctx.fill(); }
+        }
+        function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         function toggleSettings() { const s = document.getElementById('settings-menu'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
+        function toggleWeatherModal() { document.getElementById('weather-modal').classList.toggle('active'); }
         
         function showTab(tab, event) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.sidebar-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(`tab-${tab}`).classList.add('active');
+            event.target.classList.add('active'); document.getElementById(`tab-${tab}`).classList.add('active');
         }
-
-        function handleTask(e) {
-            if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                tasks.push({ id: Date.now(), text: e.target.value, done: false });
-                e.target.value = '';
-                saveTasks();
-            }
-        }
-        function toggleTask(id) { tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t); saveTasks(); }
-        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); saveTasks(); }
-        function saveTasks() { localStorage.setItem('user_tasks', JSON.stringify(tasks)); renderTasks(); }
-        function renderTasks() {
-            const list = document.getElementById('task-list');
-            list.innerHTML = tasks.map(t => `<li class="task-item ${t.done ? 'done' : ''}"><span onclick="toggleTask(${t.id})" style="cursor:pointer">${t.text}</span><div class="task-actions"><button class="task-btn" onclick="toggleTask(${t.id})">${t.done ? '↩' : '✓'}</button><button class="task-btn" onclick="deleteTask(${t.id})" style="color:#ff5252">×</button></div></li>`).join('');
-        }
-
-        async function fetchNews() {
-            try {
-                const res = await fetch('https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=10');
-                const data = await res.json();
-                document.getElementById('news-ticker').innerHTML = data.items.map(n => `<span>${n.titulo.toUpperCase()}</span>`).join('');
-            } catch(e) { document.getElementById('news-ticker').innerHTML = "<span>SISTEMA DE NOTÍCIAS BRASIL: ONLINE</span>"; }
-        }
-
-        async function fetchIP() {
-            try {
-                const r = await fetch('https://api.ipify.org?format=json');
-                const d = await r.json();
-                document.getElementById('ip-address').textContent = d.ip;
-            } catch(e) {}
-        }
-
-        function checkNet() {
-            const dot = document.getElementById('net-dot');
-            const status = document.getElementById('net-status');
-            if(navigator.onLine) { dot.classList.add('status-online'); status.textContent = "ONLINE"; }
-            else { dot.classList.remove('status-online'); status.textContent = "OFFLINE"; }
-        }
-        window.addEventListener('online', checkNet);
-        window.addEventListener('offline', checkNet);
 
         function aplicarCor(c) {
             document.documentElement.style.setProperty('--accent-color', c);
-            document.documentElement.style.setProperty('--inner-glow', `inset 0 0 15px ${c}33`);
+            localStorage.setItem('accentColor', c);
         }
 
-        function rodar() {
-            const agora = new Date(Date.now() + offsetGlobal);
-            let h = agora.getHours();
-            const m = String(agora.getMinutes()).padStart(2, '0');
-            const s = String(agora.getSeconds()).padStart(2, '0');
-            const ms = String(agora.getMilliseconds()).padStart(3, '0');
-            if(!config.isManual) aplicarCor(h >= 18 || h < 6 ? '#00ff41' : '#ffbf00');
-            const hDisplay = config.is24h ? String(h).padStart(2, '0') : (h % 12 || 12);
-            document.getElementById('tempo-principal').textContent = `${hDisplay}:${m}:${s}`;
-            document.getElementById('ms-display').textContent = `.${ms}`;
-            document.getElementById('ms-display').style.visibility = config.showMs ? 'visible' : 'hidden';
-            document.getElementById('data-extensa').textContent = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            [1,2,3].forEach(i => { document.getElementById(`time-${i}`).textContent = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone: config.tz[i-1], hour12: !config.is24h }).format(agora); });
-            requestAnimationFrame(rodar);
+        async function init() {
+            initCanvas(); animate();
+            const zones = [{n:"NOVA YORK", v:"America/New_York"}, {n:"LONDRES", v:"Europe/London"}, {n:"TÓQUIO", v:"Asia/Tokyo"}, {n:"SÃO PAULO", v:"America/Sao_Paulo"}];
+            [1,2,3].forEach(i => {
+                const s = document.getElementById(`tz-${i}`);
+                zones.forEach(z => s.add(new Option(z.n, z.v)));
+                s.value = zones[i-1].v;
+            });
+            document.getElementById('notes-area').value = localStorage.getItem('user_notes') || '';
+            renderTasks(); updateRelogio(); fetchFinance(); fetchIP(); fetchNews(); buscarClima(); monitorBateria(); checkNet();
+        }
+
+        function updateRelogio() {
+            const agora = new Date(Date.now() + offset);
+            const is24h = document.getElementById('check-24h').checked;
+            const showMs = document.getElementById('check-ms').checked;
+            const manual = document.getElementById('check-manual').checked;
+
+            if(!manual) {
+                const h = agora.getHours();
+                aplicarCor(h >= 18 || h < 6 ? '#00ff41' : '#ffbf00');
+            }
+
+            document.getElementById('tempo-principal').textContent = agora.toLocaleTimeString('pt-BR', {hour12: !is24h});
+            document.getElementById('ms-display').textContent = '.' + String(agora.getMilliseconds()).padStart(3,'0');
+            document.getElementById('ms-display').style.visibility = showMs ? 'visible' : 'hidden';
+            [1,2,3].forEach(i => {
+                const sel = document.getElementById(`tz-${i}`);
+                document.getElementById(`time-${i}`).textContent = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone: sel.value, hour12:!is24h }).format(agora);
+            });
+            requestAnimationFrame(updateRelogio);
+        }
+
+        async function buscarClima() {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const { latitude: lat, longitude: lon } = pos.coords;
+                try {
+                    const resLoc = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+                    const dLoc = await resLoc.json();
+                    document.getElementById('loc-txt').textContent = (dLoc.address.city || dLoc.address.town || "DETECTADO").toUpperCase();
+
+                    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true&daily=weathercode,temperature_2m_max&timezone=auto`);
+                    const d = await r.json();
+                    
+                    document.getElementById('temp-txt').textContent = `${Math.round(d.current_weather.temperature)}°C`;
+                    document.getElementById('wind-txt').textContent = `${d.current_weather.windspeed} KM/H`;
+                    document.getElementById('hum-txt').textContent = `${d.current_weather.relative_humidity_2m || '--'}%`;
+
+                    const icons = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 51: '🌧️', 61: '🌧️', 80: '🌦️', 95: '⛈️' };
+                    const forecastDiv = document.getElementById('forecast-grid');
+                    let html = "";
+                    for(let i = 1; i < 8; i++) {
+                        const dataObj = new Date(d.daily.time[i] + 'T00:00:00');
+                        const diaSemana = dataObj.toLocaleDateString('pt-BR', {weekday:'short'}).toUpperCase().replace('.','');
+                        const dataFormatada = dataObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+                        html += `<div class="forecast-item"><div class="forecast-day-name">${diaSemana}</div><div class="forecast-date">${dataFormatada}</div><span class="forecast-icon">${icons[d.daily.weathercode[i]]||'🌤️'}</span><div class="forecast-temp">${Math.round(d.daily.temperature_2m_max[i])}°</div></div>`;
+                    }
+                    forecastDiv.innerHTML = html;
+                } catch(e) {}
+            });
         }
 
         async function fetchFinance() {
             try {
                 const r = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,GBP-BRL,BTC-USD,BRL-USD');
                 const d = await r.json();
-                document.getElementById('val-brl').textContent = `$ ${parseFloat(d.BRLUSD.bid).toFixed(2)}`;
-                document.getElementById('val-usd').textContent = `R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}`;
-                document.getElementById('val-eur').textContent = `R$ ${parseFloat(d.EURBRL.bid).toFixed(2)}`;
-                document.getElementById('val-gbp').textContent = `R$ ${parseFloat(d.GBPBRL.bid).toFixed(2)}`;
-                document.getElementById('val-btc').textContent = `K$ ${Math.round(d.BTCUSD.bid/1000)}`;
+                rates.usd = 1/parseFloat(d.USDBRL.bid); rates.eur = 1/parseFloat(d.EURBRL.bid);
+                document.getElementById('v-brl').textContent = `$ ${parseFloat(d.BRLUSD.bid).toFixed(2)}`;
+                document.getElementById('v-usd').textContent = `R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}`;
+                document.getElementById('v-eur').textContent = `R$ ${parseFloat(d.EURBRL.bid).toFixed(2)}`;
+                document.getElementById('v-gbp').textContent = `R$ ${parseFloat(d.GBPBRL.bid).toFixed(2)}`;
+                document.getElementById('v-btc').textContent = `$${Math.round(d.BTCUSD.bid/1000)}K`;
+                convert(document.getElementById('converter-input').value);
             } catch(e) {}
         }
 
-        async function sincronizar() {
-            try {
-                const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife');
-                const d = await r.json();
-                offsetGlobal = new Date(d.datetime).getTime() - Date.now();
-                document.getElementById('sync-status').textContent = "✓ SINC: ATÔMICO";
-                document.getElementById('sync-status').style.color = "#4caf50";
-            } catch(e) { document.getElementById('sync-status').textContent = "⚠ SINC: LOCAL"; }
+        function convert(v) { if(!v) v = 0; document.getElementById('c-usd').textContent = (v * rates.usd).toFixed(2); document.getElementById('c-eur').textContent = (v * rates.eur).toFixed(2); }
+
+        function generatePass() {
+            const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+            let p = ""; for(let i=0; i<16; i++) p += c.charAt(Math.floor(Math.random() * c.length));
+            document.getElementById('generated-pass').textContent = p;
         }
 
-        async function iniciarBateria() {
-            if ('getBattery' in navigator) {
-                const battery = await navigator.getBattery();
-                const update = () => {
-                    const n = Math.round(battery.level * 100);
-                    const el = document.getElementById('bateria');
-                    el.textContent = `${battery.charging ? '⚡' : '🔋'} ${n}%`;
-                    el.style.color = battery.charging ? "#4caf50" : (n <= 20 ? "#ff5252" : "var(--accent-color)");
-                };
-                update();
-                battery.addEventListener('levelchange', update);
-                battery.addEventListener('chargingchange', update);
-            }
+        function handleTask(e) { if (e.key === 'Enter' && e.target.value.trim() !== '') { tasks.push({ id: Date.now(), text: e.target.value, done: false }); e.target.value = ''; saveTasks(); } }
+        function toggleTask(id) { tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t); saveTasks(); }
+        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); saveTasks(); }
+        function saveTasks() { localStorage.setItem('user_tasks', JSON.stringify(tasks)); renderTasks(); }
+        function renderTasks() {
+            const list = document.getElementById('task-list');
+            list.innerHTML = tasks.map(t => `<li style="display:flex; justify-content:space-between; padding:8px; background:rgba(255,255,255,0.03); margin-bottom:5px; border-radius:5px; font-size:0.85rem; ${t.done ? 'opacity:0.4; text-decoration:line-through;' : ''}"><span onclick="toggleTask(${t.id})" style="cursor:pointer">${t.text}</span><button onclick="deleteTask(${t.id})" style="background:none; border:none; color:#ff5252; cursor:pointer; font-weight:bold;">×</button></li>`).join('');
         }
 
-        async function buscarPosicaoEClima() {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                try {
-                    const resLoc = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
-                    const dLoc = await resLoc.json();
-                    document.getElementById('localizacao').textContent = `📍 ${dLoc.address.city || dLoc.address.town || "Petrolina"}`;
-                    const resCl = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`);
-                    const dCl = await resCl.json();
-                    document.getElementById('clima').textContent = `🌤️ ${Math.round(dCl.current_weather.temperature)}°C`;
-                } catch (e) {}
-            });
-        }
+        async function fetchIP() { try { const r = await fetch('https://api.ipify.org?format=json'); const d = await r.json(); document.getElementById('ip-txt').textContent = d.ip; } catch(e){} }
+        function checkNet() { const dot = document.getElementById('net-dot'); if(navigator.onLine) { dot.classList.add('status-online'); document.getElementById('net-status').textContent = "ONLINE"; } else { dot.classList.remove('status-online'); document.getElementById('net-status').textContent = "OFFLINE"; } }
+        async function monitorBateria() { if (navigator.getBattery) { const b = await navigator.getBattery(); const u = () => { document.getElementById('bat-txt').textContent = `${b.charging ? '⚡' : '🔋'} BATERIA: ${Math.round(b.level * 100)}%`; }; b.onlevelchange = u; b.onchargingchange = u; u(); } }
+        async function fetchNews() { try { const r = await fetch('https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=10'); const d = await r.json(); document.getElementById('news-ticker').innerHTML = d.items.map(n => `<span>${n.titulo.toUpperCase()}</span>`).join(''); } catch(e) {} }
+        async function sincronizar() { try { const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife'); const d = await r.json(); offset = new Date(d.datetime).getTime() - Date.now(); document.getElementById('sync-status').textContent = "SINC: ATÔMICO"; document.getElementById('sync-status').style.color = "#4caf50"; } catch(e) {} }
 
         document.getElementById('notes-area').oninput = (e) => localStorage.setItem('user_notes', e.target.value);
-        init();
-        setInterval(fetchFinance, 60000); 
-        setInterval(fetchNews, 300000);
-        setInterval(sincronizar, 600000);
+        window.onresize = initCanvas; window.addEventListener('online', checkNet); window.addEventListener('offline', checkNet);
+        init(); sincronizar(); setInterval(fetchFinance, 60000); setInterval(fetchNews, 300000); setInterval(sincronizar, 600000);
     </script>
 </body>
 </html>
