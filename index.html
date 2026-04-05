@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center Pro - Ultimate Edition</title>
+    <title>Command Center Pro - v1.5.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -24,7 +24,6 @@
             height: 100vh;
         }
 
-        /* CONTAINER CENTRAL */
         #widget-container {
             position: absolute;
             top: 48%;
@@ -56,7 +55,6 @@
             position: relative;
         }
 
-        /* HUB DE ATALHOS */
         #shortcuts-hub {
             display: flex;
             gap: 25px;
@@ -82,7 +80,6 @@
         .shortcut-icon svg { width: 22px; height: 22px; fill: white; transition: fill 0.3s; }
         .shortcut-wrapper:hover .shortcut-icon svg { fill: var(--accent-color); }
 
-        /* PAINEL DE INFO */
         #info-panel {
             margin-top: 15px;
             background: var(--glass-bg);
@@ -110,7 +107,36 @@
         .city-select { background: transparent; border: none; color: #888; font-size: 0.65rem; text-transform: uppercase; cursor: pointer; font-family: inherit; outline: none; text-align-last: center; }
         .city-time { font-size: 1.1rem; color: var(--accent-color); font-weight: bold; text-align: center; }
 
-        /* BARRA LATERAL (NOTAS + TAREFAS) */
+        #status-footer {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.65rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .status-item { display: flex; align-items: center; gap: 6px; }
+
+        /* VERSION TAG */
+        #version-tag {
+            position: fixed;
+            bottom: 45px;
+            right: 15px;
+            font-size: 0.6rem;
+            color: #444;
+            background: rgba(0,0,0,0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-main);
+            letter-spacing: 1px;
+            z-index: 90;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
         #sidebar {
             position: fixed; right: -320px; top: 0;
             width: 310px; height: 100vh;
@@ -136,10 +162,8 @@
 
         .sidebar-content { flex-grow: 1; display: none; overflow-y: auto; }
         .sidebar-content.active { display: block; }
-
         #notes-area { width: 100%; height: 80%; background: transparent; border: none; color: #eee; font-family: inherit; resize: none; outline: none; font-size: 0.95rem; line-height: 1.6; }
         
-        /* TASK LIST STYLE */
         #task-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: white; border-radius: 5px; outline: none; margin-bottom: 15px; }
         #task-list { list-style: none; padding: 0; }
         .task-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 5px; margin-bottom: 8px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.05); }
@@ -147,7 +171,6 @@
         .task-actions { display: flex; gap: 10px; }
         .task-btn { background: none; border: none; cursor: pointer; font-size: 1rem; }
 
-        /* NEWS TICKER (RODAPÉ) - AJUSTADO PARA BRASIL E MAIS LENTO */
         #news-ticker-container {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(0, 0, 0, 0.8);
@@ -155,7 +178,6 @@
             padding: 8px 0; z-index: 100; overflow: hidden;
             white-space: nowrap; font-size: 0.85rem; font-weight: bold;
         }
-        /* Duração alterada para 90s para fluir lentamente */
         #news-ticker { display: inline-block; animation: ticker-scroll 90s linear infinite; color: #ccc; }
         #news-ticker span { margin-right: 50px; color: white; }
         #news-ticker span::before { content: "•"; color: var(--accent-color); margin-right: 10px; }
@@ -165,23 +187,15 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* SETTINGS MENU NO ESTILO VIDRO */
         #settings-menu {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 2px solid var(--accent-color);
-            padding: 25px; border-radius: 15px; z-index: 10000;
-            display: none; flex-direction: column; gap: 15px; width: 280px;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border: 2px solid var(--accent-color); padding: 25px; border-radius: 15px;
+            z-index: 10000; display: none; flex-direction: column; gap: 15px; width: 280px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), var(--inner-glow);
         }
 
-        #settings-menu label { font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-
-        #btn-settings { position: absolute; left: 15px; top: 15px; background: none; border: none; color: #555; cursor: pointer; font-size: 1.3rem; transition: color 0.3s; }
-        #btn-settings:hover { color: white; }
-        
+        #btn-settings { position: absolute; left: 15px; top: 15px; background: none; border: none; color: #555; cursor: pointer; font-size: 1.3rem; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: #ff5252; margin-right: 5px; }
         .status-online { background: #4caf50; box-shadow: 0 0 10px #4caf50; }
 
@@ -189,6 +203,7 @@
             #relogio { font-size: 2.2rem; }
             #finance-bar { grid-template-columns: 1fr 1fr; }
             #world-clocks { grid-template-columns: 1fr; }
+            #version-tag { bottom: 50px; right: 5px; font-size: 0.5rem; }
         }
     </style>
 </head>
@@ -197,36 +212,24 @@
     <div id="sidebar-trigger" onclick="toggleSidebar()">CENTRO DE COMANDO</div>
     <div id="sidebar">
         <div class="sidebar-tabs">
-            <button class="tab-btn active" onclick="showTab('notes')">NOTAS</button>
-            <button class="tab-btn" onclick="showTab('tasks')">TAREFAS</button>
+            <button class="tab-btn active" onclick="showTab('notes', event)">NOTAS</button>
+            <button class="tab-btn" onclick="showTab('tasks', event)">TAREFAS</button>
         </div>
-
         <div id="tab-notes" class="sidebar-content active">
             <textarea id="notes-area" placeholder="Anotações rápidas..."></textarea>
         </div>
-
         <div id="tab-tasks" class="sidebar-content">
             <input type="text" id="task-input" placeholder="Nova tarefa + Enter" onkeypress="handleTask(event)">
             <ul id="task-list"></ul>
         </div>
-
         <button onclick="toggleSidebar()" style="margin-top:20px; background:var(--accent-color); color:black; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; width:100%;">FECHAR</button>
     </div>
 
     <div id="widget-container">
         <div id="shortcuts-hub">
-            <a href="https://google.com" target="_blank" class="shortcut-wrapper">
-                <div class="shortcut-icon">G</div>
-                <span class="shortcut-label">Google</span>
-            </a>
-            <a href="https://youtube.com" target="_blank" class="shortcut-wrapper">
-                <div class="shortcut-icon">Y</div>
-                <span class="shortcut-label">YouTube</span>
-            </a>
-            <a href="https://web.whatsapp.com" target="_blank" class="shortcut-wrapper">
-                <div class="shortcut-icon">W</div>
-                <span class="shortcut-label">WhatsApp</span>
-            </a>
+            <a href="https://google.com" target="_blank" class="shortcut-wrapper"><div class="shortcut-icon">G</div><span class="shortcut-label">Google</span></a>
+            <a href="https://youtube.com" target="_blank" class="shortcut-wrapper"><div class="shortcut-icon">Y</div><span class="shortcut-label">YouTube</span></a>
+            <a href="https://web.whatsapp.com" target="_blank" class="shortcut-wrapper"><div class="shortcut-icon">W</div><span class="shortcut-label">WhatsApp</span></a>
             <a href="https://gemini.google.com" target="_blank" class="shortcut-wrapper">
                 <div class="shortcut-icon">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -264,10 +267,18 @@
                 <div class="city-clock"><select class="city-select" id="tz-2"></select><div class="city-time" id="time-2">00:00</div></div>
                 <div class="city-clock"><select class="city-select" id="tz-3"></select><div class="city-time" id="time-3">00:00</div></div>
             </div>
+
+            <div id="status-footer">
+                <div class="status-item"><span id="net-dot" class="status-dot"></span> <span id="net-status">OFFLINE</span></div>
+                <div class="status-item">IP: <span id="ip-address" style="color:#888">---.---.---.---</span></div>
+                <div class="status-item" id="sync-status">⚠ SINC: LOCAL</div>
+            </div>
         </div>
     </div>
 
-    <div id="news-ticker-container"><div id="news-ticker">Carregando notícias do Brasil...</div></div>
+    <div id="version-tag">VER: 1.5.3</div>
+
+    <div id="news-ticker-container"><div id="news-ticker">Sincronizando notícias globais...</div></div>
 
     <div id="settings-menu">
         <label>Formato 24h <input type="checkbox" id="check-24h"></label>
@@ -328,22 +339,22 @@
             iniciarBateria();
             buscarPosicaoEClima();
             fetchFinance();
+            fetchIP();
             fetchNews();
+            checkNet();
             rodar(); 
         }
 
-        // SIDEBAR & TABS
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         function toggleSettings() { const s = document.getElementById('settings-menu'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
         
-        function showTab(tab) {
+        function showTab(tab, event) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.sidebar-content').forEach(c => c.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(`tab-${tab}`).classList.add('active');
         }
 
-        // TAREFAS (TO-DO)
         function handleTask(e) {
             if (e.key === 'Enter' && e.target.value.trim() !== '') {
                 tasks.push({ id: Date.now(), text: e.target.value, done: false });
@@ -351,44 +362,39 @@
                 saveTasks();
             }
         }
-        function toggleTask(id) {
-            tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
-            saveTasks();
-        }
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
-            saveTasks();
-        }
-        function saveTasks() {
-            localStorage.setItem('user_tasks', JSON.stringify(tasks));
-            renderTasks();
-        }
+        function toggleTask(id) { tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t); saveTasks(); }
+        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); saveTasks(); }
+        function saveTasks() { localStorage.setItem('user_tasks', JSON.stringify(tasks)); renderTasks(); }
         function renderTasks() {
             const list = document.getElementById('task-list');
-            list.innerHTML = tasks.map(t => `
-                <li class="task-item ${t.done ? 'done' : ''}">
-                    <span onclick="toggleTask(${t.id})" style="cursor:pointer">${t.text}</span>
-                    <div class="task-actions">
-                        <button class="task-btn" onclick="toggleTask(${t.id})">${t.done ? '↩' : '✓'}</button>
-                        <button class="task-btn" onclick="deleteTask(${t.id})" style="color:#ff5252">×</button>
-                    </div>
-                </li>
-            `).join('');
+            list.innerHTML = tasks.map(t => `<li class="task-item ${t.done ? 'done' : ''}"><span onclick="toggleTask(${t.id})" style="cursor:pointer">${t.text}</span><div class="task-actions"><button class="task-btn" onclick="toggleTask(${t.id})">${t.done ? '↩' : '✓'}</button><button class="task-btn" onclick="deleteTask(${t.id})" style="color:#ff5252">×</button></div></li>`).join('');
         }
 
-        // NOTÍCIAS (API DO IBGE - BRASIL)
         async function fetchNews() {
             try {
                 const res = await fetch('https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=10');
                 const data = await res.json();
-                const ticker = document.getElementById('news-ticker');
-                ticker.innerHTML = data.items.map(n => `<span>${n.titulo.toUpperCase()}</span>`).join('');
-            } catch(e) {
-                document.getElementById('news-ticker').innerHTML = "<span>SISTEMA DE NOTÍCIAS BRASIL: ONLINE</span><span>TUDO OPERACIONAL</span>";
-            }
+                document.getElementById('news-ticker').innerHTML = data.items.map(n => `<span>${n.titulo.toUpperCase()}</span>`).join('');
+            } catch(e) { document.getElementById('news-ticker').innerHTML = "<span>SISTEMA DE NOTÍCIAS BRASIL: ONLINE</span>"; }
         }
 
-        // RELÓGIO & CORES
+        async function fetchIP() {
+            try {
+                const r = await fetch('https://api.ipify.org?format=json');
+                const d = await r.json();
+                document.getElementById('ip-address').textContent = d.ip;
+            } catch(e) {}
+        }
+
+        function checkNet() {
+            const dot = document.getElementById('net-dot');
+            const status = document.getElementById('net-status');
+            if(navigator.onLine) { dot.classList.add('status-online'); status.textContent = "ONLINE"; }
+            else { dot.classList.remove('status-online'); status.textContent = "OFFLINE"; }
+        }
+        window.addEventListener('online', checkNet);
+        window.addEventListener('offline', checkNet);
+
         function aplicarCor(c) {
             document.documentElement.style.setProperty('--accent-color', c);
             document.documentElement.style.setProperty('--inner-glow', `inset 0 0 15px ${c}33`);
@@ -400,31 +406,20 @@
             const m = String(agora.getMinutes()).padStart(2, '0');
             const s = String(agora.getSeconds()).padStart(2, '0');
             const ms = String(agora.getMilliseconds()).padStart(3, '0');
-
-            if(!config.isManual) {
-                aplicarCor(h >= 18 || h < 6 ? '#00ff41' : '#ffbf00');
-            }
-
+            if(!config.isManual) aplicarCor(h >= 18 || h < 6 ? '#00ff41' : '#ffbf00');
             const hDisplay = config.is24h ? String(h).padStart(2, '0') : (h % 12 || 12);
             document.getElementById('tempo-principal').textContent = `${hDisplay}:${m}:${s}`;
             document.getElementById('ms-display').textContent = `.${ms}`;
             document.getElementById('ms-display').style.visibility = config.showMs ? 'visible' : 'hidden';
             document.getElementById('data-extensa').textContent = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-            [1,2,3].forEach(i => {
-                document.getElementById(`time-${i}`).textContent = new Intl.DateTimeFormat('pt-BR', {
-                    hour:'2-digit', minute:'2-digit', timeZone: config.tz[i-1], hour12: !config.is24h
-                }).format(agora);
-            });
+            [1,2,3].forEach(i => { document.getElementById(`time-${i}`).textContent = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone: config.tz[i-1], hour12: !config.is24h }).format(agora); });
             requestAnimationFrame(rodar);
         }
 
-        // FINANCEIRO (ORDEM: BRL, USD, EUR, GBP, BTC)
         async function fetchFinance() {
             try {
                 const r = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,GBP-BRL,BTC-USD,BRL-USD');
                 const d = await r.json();
-                
                 document.getElementById('val-brl').textContent = `$ ${parseFloat(d.BRLUSD.bid).toFixed(2)}`;
                 document.getElementById('val-usd').textContent = `R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}`;
                 document.getElementById('val-eur').textContent = `R$ ${parseFloat(d.EURBRL.bid).toFixed(2)}`;
@@ -433,51 +428,49 @@
             } catch(e) {}
         }
 
-        async function sincronizar() { try { const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife'); const d = await r.json(); offsetGlobal = new Date(d.datetime).getTime() - Date.now(); } catch(e) {} }
-        
+        async function sincronizar() {
+            try {
+                const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife');
+                const d = await r.json();
+                offsetGlobal = new Date(d.datetime).getTime() - Date.now();
+                document.getElementById('sync-status').textContent = "✓ SINC: ATÔMICO";
+                document.getElementById('sync-status').style.color = "#4caf50";
+            } catch(e) { document.getElementById('sync-status').textContent = "⚠ SINC: LOCAL"; }
+        }
+
         async function iniciarBateria() {
             if ('getBattery' in navigator) {
-                try {
-                    const battery = await navigator.getBattery();
-                    const update = () => {
-                        const n = Math.round(battery.level * 100);
-                        const el = document.getElementById('bateria');
-                        el.textContent = `${battery.charging ? '⚡' : '🔋'} ${n}%`;
-                        el.style.color = battery.charging ? "#4caf50" : (n <= 20 ? "#ff5252" : "var(--accent-color)");
-                    };
-                    update();
-                    battery.addEventListener('levelchange', update);
-                    battery.addEventListener('chargingchange', update);
-                } catch(e) { document.getElementById('bateria').style.display = 'none'; }
-            } else {
-                document.getElementById('bateria').style.display = 'none';
+                const battery = await navigator.getBattery();
+                const update = () => {
+                    const n = Math.round(battery.level * 100);
+                    const el = document.getElementById('bateria');
+                    el.textContent = `${battery.charging ? '⚡' : '🔋'} ${n}%`;
+                    el.style.color = battery.charging ? "#4caf50" : (n <= 20 ? "#ff5252" : "var(--accent-color)");
+                };
+                update();
+                battery.addEventListener('levelchange', update);
+                battery.addEventListener('chargingchange', update);
             }
         }
 
         async function buscarPosicaoEClima() {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    try {
-                        const resLoc = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                        const dLoc = await resLoc.json();
-                        document.getElementById('localizacao').textContent = `📍 ${dLoc.address.city || dLoc.address.town || "Petrolina"}`;
-                        
-                        const resCl = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
-                        const dCl = await resCl.json();
-                        document.getElementById('clima').textContent = `🌤️ ${Math.round(dCl.current_weather.temperature)}°C`;
-                    } catch (e) {}
-                });
-            }
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const resLoc = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+                    const dLoc = await resLoc.json();
+                    document.getElementById('localizacao').textContent = `📍 ${dLoc.address.city || dLoc.address.town || "Petrolina"}`;
+                    const resCl = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`);
+                    const dCl = await resCl.json();
+                    document.getElementById('clima').textContent = `🌤️ ${Math.round(dCl.current_weather.temperature)}°C`;
+                } catch (e) {}
+            });
         }
 
         document.getElementById('notes-area').oninput = (e) => localStorage.setItem('user_notes', e.target.value);
-        
         init();
         setInterval(fetchFinance, 60000); 
-        setInterval(fetchNews, 300000); // Atualiza notícias a cada 5 minutos
+        setInterval(fetchNews, 300000);
         setInterval(sincronizar, 600000);
-        setInterval(buscarPosicaoEClima, 900000);
     </script>
 </body>
 </html>
