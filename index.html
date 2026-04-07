@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center Pro - v2.0.9</title>
+    <title>Command Center Pro - v3.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent-color: #00ff41; 
-            --bg-dark: #06080a; 
+            --accent-color: #b377ff; 
+            --bg-dark: #150a21; 
             --font-main: 'Courier New', Courier, monospace; 
-            --glass-bg: rgba(10, 12, 15, 0.85);
+            --glass-bg: rgba(25, 15, 35, 0.85);
             --glass-blur: blur(25px);
-            --inner-glow: inset 0 0 15px rgba(0, 255, 65, 0.2);
+            --inner-glow: inset 0 0 15px rgba(179, 119, 255, 0.15);
         }
 
         body {
@@ -30,35 +30,39 @@
             z-index: 5; width: 95%; max-width: 700px;
         }
 
+        /* RELÓGIO COM ANIMAÇÃO NEON PULSANTE */
         #relogio {
             font-family: var(--font-main); font-size: 3.5rem; font-weight: bold;
             padding: 30px; border-radius: 20px; width: 100%; box-sizing: border-box;
             color: var(--accent-color); border: 2px solid var(--accent-color); 
             background: var(--glass-bg); backdrop-filter: var(--glass-blur);
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9), var(--inner-glow);
             display: flex; justify-content: center; align-items: baseline; position: relative;
+            animation: pulse-border 4s infinite alternate;
         }
 
-        #btn-settings { position: absolute; left: 15px; top: 15px; background: none; border: none; color: #444; cursor: pointer; font-size: 1.3rem; transition: 0.3s; }
+        @keyframes pulse-border {
+            0% { border-color: var(--accent-color); box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8), var(--inner-glow); }
+            100% { border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 10px 60px rgba(0, 0, 0, 0.9), inset 0 0 25px var(--accent-color); }
+        }
+
+        #btn-settings { position: absolute; left: 15px; top: 15px; background: none; border: none; color: #666; cursor: pointer; font-size: 1.3rem; transition: 0.3s; }
         #btn-settings:hover { color: white; }
 
         #info-panel {
             background: var(--glass-bg); backdrop-filter: var(--glass-blur);
-            border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 15px;
             width: 100%; box-sizing: border-box; margin-top: 15px;
         }
 
-        /* CLIMA INTERATIVO */
         #weather-btn {
-            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;
+            background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px;
             cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05);
             display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px;
         }
-        #weather-btn:hover { border-color: var(--accent-color); background: rgba(0,255,65,0.05); }
+        #weather-btn:hover { border-color: var(--accent-color); background: rgba(179, 119, 255, 0.05); }
         .weather-detail { font-size: 0.6rem; color: #888; text-transform: uppercase; font-weight: bold; text-align: center; }
         .weather-detail b { color: #fff; display: block; font-size: 0.85rem; margin-top: 3px; }
 
-        /* MODAL PREVISÃO 7 DIAS */
         #weather-modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
             background: var(--glass-bg); backdrop-filter: var(--glass-blur);
@@ -67,32 +71,39 @@
             box-shadow: 0 0 100px rgba(0,0,0,1); transition: 0.3s ease; opacity: 0;
         }
         #weather-modal.active { display: flex; transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        .forecast-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 25px; }
+        .forecast-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 25px; }
         .forecast-item { text-align: center; }
         .forecast-day-name { font-size: 0.55rem; color: #888; text-transform: uppercase; font-weight: bold; }
-        .forecast-date { font-size: 0.5rem; color: #555; display: block; margin-bottom: 5px; }
+        .forecast-date { font-size: 0.5rem; color: #666; display: block; margin-bottom: 5px; }
         .forecast-icon { font-size: 1.3rem; display: block; margin: 8px 0; }
         .forecast-temp { font-size: 0.8rem; color: var(--accent-color); font-weight: bold; }
 
-        #finance-bar { display: flex; justify-content: space-around; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 15px; }
+        #finance-bar { display: flex; justify-content: space-around; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 15px; }
         .finance-item { text-align: center; font-size: 0.6rem; color: #888; text-transform: uppercase; }
         .finance-item b { color: #fff; display: block; font-size: 0.8rem; }
+        
+        /* CORES DE TENDÊNCIA FINANCEIRA */
+        .trend-up { color: #ff5252; font-size: 0.6rem; margin-left: 4px; }
+        .trend-down { color: #4caf50; font-size: 0.6rem; margin-left: 4px; }
 
         #converter-tool {
-            background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px;
+            background: rgba(255,255,255,0.02); border-radius: 8px; padding: 10px;
             margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05);
         }
+        #calc-base { background: transparent; border: none; color: var(--accent-color); font-size: 0.65rem; font-weight: bold; text-transform: uppercase; outline: none; cursor: pointer; }
+        #calc-base option, .city-select option { background: #150a21; color: #fff; }
         #converter-input { background: #000; border: 1px solid var(--accent-color); color: #fff; width: 75px; padding: 5px; text-align: center; border-radius: 4px; outline: none; font-family: var(--font-main); }
 
         .status-row { display: flex; justify-content: center; gap: 30px; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; color: var(--accent-color); }
+        #bat-txt { display: none; } 
 
-        #world-clocks { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 5px; }
-        .city-select { background: transparent; border: none; color: #555; font-size: 0.6rem; text-transform: uppercase; outline: none; text-align-last: center; cursor: pointer; font-family: inherit; }
+        #world-clocks { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: 5px; }
+        .city-select { background: transparent; border: none; color: #666; font-size: 0.6rem; text-transform: uppercase; outline: none; text-align-last: center; cursor: pointer; font-family: inherit; }
         .city-time { font-size: 1.1rem; color: var(--accent-color); font-weight: bold; text-align: center; }
 
         #status-footer {
             margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex; justify-content: center; gap: 20px; font-size: 0.65rem; color: #444; text-transform: uppercase;
+            display: flex; justify-content: center; gap: 20px; font-size: 0.65rem; color: #666; text-transform: uppercase;
         }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: #ff5252; margin-right: 5px; }
         .status-online { background: #4caf50; box-shadow: 0 0 8px #4caf50; }
@@ -109,11 +120,12 @@
             background: var(--accent-color); color: #000; padding: 20px 6px;
             border-radius: 10px 0 0 10px; cursor: pointer; font-weight: bold; font-size: 0.65rem; writing-mode: vertical-rl; z-index: 1001; letter-spacing: 2px;
         }
-        .sidebar-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .tab-btn { background: none; border: none; color: #555; cursor: pointer; font-weight: bold; font-size: 0.75rem; padding: 5px; }
+        .sidebar-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; color: #666; cursor: pointer; font-weight: bold; font-size: 0.75rem; padding: 5px; transition: 0.3s; }
         .tab-btn.active { color: var(--accent-color); border-bottom: 2px solid var(--accent-color); }
         .sidebar-content { display: none; flex-grow: 1; overflow-y: auto; }
         .sidebar-content.active { display: block; }
+        #notes-area { width: 100%; height: 80%; background: transparent; border: none; color: #eee; font-family: inherit; resize: none; outline: none; line-height: 1.6; }
 
         #settings-menu {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -126,13 +138,27 @@
 
         #news-ticker-container { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid var(--accent-color); padding: 8px 0; overflow: hidden; white-space: nowrap; font-size: 0.8rem; z-index: 100; font-weight: bold; }
         #news-ticker { display: inline-block; animation: ticker-scroll 90s linear infinite; color: #ccc; }
+        #news-ticker span { margin-right: 50px; color: white; }
+        #news-ticker span::before { content: "•"; color: var(--accent-color); margin-right: 10px; }
+
         @keyframes ticker-scroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
-        #version-tag { position: fixed; bottom: 45px; right: 15px; font-size: 0.6rem; color: #444; font-family: var(--font-main); z-index: 90; }
+        /* AQUI FOI AJUSTADO O TAMANHO DA FONTE E ESPAÇAMENTO */
+        #version-tag { 
+            position: fixed; 
+            bottom: 45px; 
+            right: 15px; 
+            font-size: 0.75rem; 
+            color: #555; 
+            font-family: var(--font-main); 
+            z-index: 90; 
+            letter-spacing: 1px;
+        }
 
         @media (max-width: 600px) {
             #relogio { font-size: 2.2rem; }
-            .forecast-grid { grid-template-columns: repeat(4, 1fr); }
+            #weather-modal { width: 98%; padding: 15px; }
+            .forecast-grid { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -153,23 +179,30 @@
             <button class="tab-btn" onclick="showTab('tasks', event)">TAREFAS</button>
             <button class="tab-btn" onclick="showTab('sec', event)">SEGURANÇA</button>
         </div>
-        <div id="tab-notes" class="sidebar-content active"><textarea id="notes-area" style="width:100%; height:80%; background:transparent; border:none; color:#eee; font-family:inherit; resize:none; outline:none; line-height:1.6;"></textarea></div>
-        <div id="tab-tasks" class="sidebar-content"><input type="text" id="task-input" placeholder="+ Tarefa" onkeypress="handleTask(event)" style="width:100%; padding:8px; background:#000; border:1px solid #333; color:#fff; border-radius:4px;"><ul id="task-list" style="padding:0; list-style:none; margin-top:10px;"></ul></div>
-        <div id="tab-sec" class="sidebar-content"><div style="text-align:center; background:rgba(0,0,0,0.3); padding:15px; border-radius:10px;"><div id="generated-pass" style="font-family:var(--font-main); color:var(--accent-color); margin:15px 0; font-size:1.1rem; word-break:break-all;">********</div><button onclick="generatePass()" style="background:var(--accent-color); border:none; padding:10px; width:100%; font-weight:bold; cursor:pointer; border-radius:5px;">GERAR NOVA SENHA</button></div></div>
+        <div id="tab-notes" class="sidebar-content active"><textarea id="notes-area" placeholder="Anotações rápidas..."></textarea></div>
+        <div id="tab-tasks" class="sidebar-content"><input type="text" id="task-input" placeholder="+ Tarefa" onkeypress="handleTask(event)" style="width:100%; padding:8px; background:#000; border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:4px; outline:none;"><ul id="task-list" style="padding:0; list-style:none; margin-top:10px;"></ul></div>
+        <div id="tab-sec" class="sidebar-content">
+            <div style="text-align:center; background:rgba(0,0,0,0.2); padding:15px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:0.6rem; color:#888;">GERADOR DE SENHA MILITAR</span>
+                <div id="generated-pass" onclick="copyPassword()" title="Clique para copiar" style="font-family:var(--font-main); color:var(--accent-color); margin:15px 0; font-size:1.1rem; word-break:break-all; cursor:pointer; transition: 0.3s;">********</div>
+                <button onclick="generatePass()" style="background:var(--accent-color); border:none; padding:10px; width:100%; font-weight:bold; cursor:pointer; border-radius:5px; color:#000;">GERAR NOVA SENHA</button>
+            </div>
+        </div>
         <button onclick="toggleSidebar()" style="margin-top:auto; width:100%; padding:12px; background:var(--accent-color); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">FECHAR</button>
     </div>
 
     <div id="settings-menu">
-        <label>FORMATO 24H <input type="checkbox" id="check-24h" checked></label>
-        <label>MILISSEGUNDOS <input type="checkbox" id="check-ms" checked></label>
-        <label>MODO MANUAL <input type="checkbox" id="check-manual"></label>
+        <label>FORMATO 24H <input type="checkbox" id="check-24h"></label>
+        <label>MILISSEGUNDOS <input type="checkbox" id="check-ms"></label>
+        <label>MODO MANUAL <input type="checkbox" id="check-manual" onchange="toggleManual(this.checked)"></label>
         <label>COR NEON:
-            <select id="select-color" onchange="aplicarCor(this.value)" style="background:#000; color:white; padding:5px; border-radius:4px; border:1px solid #555;">
-                <option value="#00ff41">VERDE</option>
-                <option value="#00ffff">CIANO</option>
-                <option value="#ffbf00">OURO</option>
-                <option value="#ff00ff">ROSA</option>
-                <option value="#6A1B9A">ROXO</option>
+            <select id="select-color" onchange="changeColorManual(this.value)" style="background:#000; color:white; padding:5px; border-radius:4px; border:1px solid #555; outline:none;">
+                <option value="#b377ff">DarkPurple</option>
+                <option value="#00ff41">ClassicGreen</option>
+                <option value="#00ffff">Cyan</option>
+                <option value="#ffbf00">Gold</option>
+                <option value="#ff00ff">Pink</option>
+                <option value="#241832">Midnight</option>
             </select>
         </label>
         <button onclick="toggleSettings()" style="margin-top:10px; background:var(--accent-color); color:black; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:5px;">FECHAR</button>
@@ -182,7 +215,7 @@
         </div>
         
         <div id="info-panel">
-            <div id="weather-btn" onclick="toggleWeatherModal()">
+            <div id="weather-btn" onclick="toggleWeatherModal()" title="Clique para ver 7 dias">
                 <div class="weather-detail">LOCAL 📍 <b id="loc-txt">BUSCANDO...</b></div>
                 <div class="weather-detail">CLIMA 🌤️ <b id="temp-txt">--°C</b></div>
                 <div class="weather-detail">VENTO 💨 <b id="wind-txt">-- KM/H</b></div>
@@ -198,10 +231,14 @@
             </div>
 
             <div id="converter-tool">
-                <span style="font-size:0.6rem; color:#666; font-weight:bold;">CALC R$:</span>
-                <input type="number" id="converter-input" value="10" oninput="convert(this.value)">
-                <div class="finance-item" style="font-size:0.7rem; margin-left:10px;">USD: <b id="c-usd">0.00</b></div>
-                <div class="finance-item" style="font-size:0.7rem; margin-left:10px;">EUR: <b id="c-eur">0.00</b></div>
+                <select id="calc-base" onchange="convert()" title="Moeda de Origem">
+                    <option value="BRL">BRL</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+                <input type="number" id="converter-input" value="10" oninput="convert()">
+                <div class="finance-item" style="font-size:0.7rem; margin-left:10px;"><span id="c-lbl-1">USD</span>: <b id="c-val-1">0.00</b></div>
+                <div class="finance-item" style="font-size:0.7rem; margin-left:10px;"><span id="c-lbl-2">EUR</span>: <b id="c-val-2">0.00</b></div>
             </div>
 
             <div class="status-row">
@@ -222,14 +259,32 @@
         </div>
     </div>
 
-    <div id="version-tag">VER: 2.0.9</div>
+    <div id="version-tag">&copy; <span id="current-year"></span> | VER: 3.4</div>
+    
     <div id="news-ticker-container"><div id="news-ticker">CONECTANDO AO FEED GLOBAL...</div></div>
 
     <script>
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
-        let particles = []; let offset = 0; let rates = { usd: 0, eur: 0 };
+        let particles = [];
+        let offsetGlobal = 0;
+        let rawRates = { BRL: 1, USD: 0, EUR: 0 };
         let tasks = JSON.parse(localStorage.getItem('user_tasks')) || [];
+        
+        const config = {
+            is24h: localStorage.getItem('is24h') !== 'false',
+            showMs: localStorage.getItem('showMs') !== 'false',
+            isManual: localStorage.getItem('isManual') === 'true',
+            accentColor: localStorage.getItem('accentColor') || '#b377ff', 
+            tz: [localStorage.getItem('tz1') || 'America/New_York', localStorage.getItem('tz2') || 'Europe/London', localStorage.getItem('tz3') || 'Asia/Tokyo']
+        };
+
+        const zones = [
+            { n: "NOVA YORK", v: "America/New_York" }, { n: "LONDRES", v: "Europe/London" },
+            { n: "TÓQUIO", v: "Asia/Tokyo" }, { n: "SÃO PAULO", v: "America/Sao_Paulo" },
+            { n: "DUBAI", v: "Asia/Dubai" }, { n: "HONG KONG", v: "Asia/Hong_Kong" },
+            { n: "BERLIM", v: "Europe/Berlin" }
+        ];
 
         function initCanvas() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -238,7 +293,7 @@
         class Particle {
             constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.speedX = Math.random()*0.4-0.2; this.speedY = Math.random()*0.4-0.2; }
             update() { this.x += this.speedX; this.y += this.speedY; if(this.x>canvas.width||this.x<0)this.speedX*=-1; if(this.y>canvas.height||this.y<0)this.speedY*=-1; }
-            draw() { ctx.fillStyle = localStorage.getItem('accentColor') || '#00ff41'; ctx.beginPath(); ctx.arc(this.x,this.y,1.5,0,Math.PI*2); ctx.fill(); }
+            draw() { ctx.fillStyle = localStorage.getItem('accentColor') || '#b377ff'; ctx.beginPath(); ctx.arc(this.x,this.y,1.5,0,Math.PI*2); ctx.fill(); }
         }
         function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
 
@@ -249,43 +304,85 @@
         function showTab(tab, event) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.sidebar-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active'); document.getElementById(`tab-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
         }
 
         function aplicarCor(c) {
             document.documentElement.style.setProperty('--accent-color', c);
-            localStorage.setItem('accentColor', c);
+            document.documentElement.style.setProperty('--inner-glow', `inset 0 0 15px ${c}33`);
+        }
+
+        function toggleManual(isManualChecked) {
+            config.isManual = isManualChecked;
+            localStorage.setItem('isManual', isManualChecked);
+            if(isManualChecked) { aplicarCor(config.accentColor); }
+        }
+
+        function changeColorManual(newColor) {
+            config.accentColor = newColor;
+            localStorage.setItem('accentColor', newColor);
+            config.isManual = true;
+            document.getElementById('check-manual').checked = true;
+            localStorage.setItem('isManual', 'true');
+            aplicarCor(newColor);
         }
 
         async function init() {
             initCanvas(); animate();
-            const zones = [{n:"NOVA YORK", v:"America/New_York"}, {n:"LONDRES", v:"Europe/London"}, {n:"TÓQUIO", v:"Asia/Tokyo"}, {n:"SÃO PAULO", v:"America/Sao_Paulo"}];
+            
             [1,2,3].forEach(i => {
                 const s = document.getElementById(`tz-${i}`);
                 zones.forEach(z => s.add(new Option(z.n, z.v)));
-                s.value = zones[i-1].v;
+                s.value = config.tz[i-1];
+                s.onchange = (e) => { config.tz[i-1] = e.target.value; localStorage.setItem(`tz${i}`, e.target.value); };
             });
+
+            document.getElementById('check-24h').checked = config.is24h;
+            document.getElementById('check-ms').checked = config.showMs;
+            document.getElementById('check-manual').checked = config.isManual;
+            document.getElementById('select-color').value = config.accentColor;
+            
+            document.getElementById('check-24h').onchange = (e) => { config.is24h = e.target.checked; localStorage.setItem('is24h', config.is24h); };
+            document.getElementById('check-ms').onchange = (e) => { config.showMs = e.target.checked; localStorage.setItem('showMs', config.showMs); };
+            
             document.getElementById('notes-area').value = localStorage.getItem('user_notes') || '';
-            renderTasks(); updateRelogio(); fetchFinance(); fetchIP(); fetchNews(); buscarClima(); monitorBateria(); checkNet();
+            document.getElementById('notes-area').oninput = (e) => localStorage.setItem('user_notes', e.target.value);
+            
+            renderTasks();
+            
+            if (config.isManual) { aplicarCor(config.accentColor); }
+
+            // Atualiza o ano no rodapé automaticamente
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            sincronizarTime();
+            updateRelogio();
+            fetchFinance();
+            fetchIP();
+            fetchNews();
+            buscarClima();
+            monitorBateria();
+            checkNet();
         }
 
         function updateRelogio() {
-            const agora = new Date(Date.now() + offset);
-            const is24h = document.getElementById('check-24h').checked;
-            const showMs = document.getElementById('check-ms').checked;
-            const manual = document.getElementById('check-manual').checked;
-
-            if(!manual) {
-                const h = agora.getHours();
-                aplicarCor(h >= 18 || h < 6 ? '#00ff41' : '#ffbf00');
+            const agora = new Date(Date.now() + offsetGlobal);
+            const h = agora.getHours();
+            
+            if(!config.isManual) {
+                aplicarCor(h >= 18 || h < 6 ? '#b377ff' : '#ffbf00'); 
             }
 
-            document.getElementById('tempo-principal').textContent = agora.toLocaleTimeString('pt-BR', {hour12: !is24h});
+            const is24h = config.is24h;
+            const hDisp = is24h ? String(h).padStart(2,'0') : (h % 12 || 12);
+            document.getElementById('tempo-principal').textContent = `${hDisp}:${String(agora.getMinutes()).padStart(2,'0')}:${String(agora.getSeconds()).padStart(2,'0')}`;
             document.getElementById('ms-display').textContent = '.' + String(agora.getMilliseconds()).padStart(3,'0');
-            document.getElementById('ms-display').style.visibility = showMs ? 'visible' : 'hidden';
+            document.getElementById('ms-display').style.visibility = config.showMs ? 'visible' : 'hidden';
+            
             [1,2,3].forEach(i => {
-                const sel = document.getElementById(`tz-${i}`);
-                document.getElementById(`time-${i}`).textContent = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone: sel.value, hour12:!is24h }).format(agora);
+                const s = document.getElementById(`tz-${i}`);
+                document.getElementById(`time-${i}`).textContent = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone: s.value, hour12:!is24h }).format(agora);
             });
             requestAnimationFrame(updateRelogio);
         }
@@ -307,12 +404,21 @@
 
                     const icons = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 51: '🌧️', 61: '🌧️', 80: '🌦️', 95: '⛈️' };
                     const forecastDiv = document.getElementById('forecast-grid');
+                    
                     let html = "";
-                    for(let i = 1; i < 8; i++) {
+                    for(let i = 1; i < 7; i++) {
                         const dataObj = new Date(d.daily.time[i] + 'T00:00:00');
                         const diaSemana = dataObj.toLocaleDateString('pt-BR', {weekday:'short'}).toUpperCase().replace('.','');
                         const dataFormatada = dataObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-                        html += `<div class="forecast-item"><div class="forecast-day-name">${diaSemana}</div><div class="forecast-date">${dataFormatada}</div><span class="forecast-icon">${icons[d.daily.weathercode[i]]||'🌤️'}</span><div class="forecast-temp">${Math.round(d.daily.temperature_2m_max[i])}°</div></div>`;
+                        const icon = icons[d.daily.weathercode[i]] || '🌤️';
+                        
+                        html += `
+                        <div class="forecast-item">
+                            <div class="forecast-day-name">${diaSemana}</div>
+                            <div class="forecast-date">${dataFormatada}</div>
+                            <span class="forecast-icon">${icon}</span>
+                            <div class="forecast-temp">${Math.round(d.daily.temperature_2m_max[i])}°</div>
+                        </div>`;
                     }
                     forecastDiv.innerHTML = html;
                 } catch(e) {}
@@ -323,42 +429,119 @@
             try {
                 const r = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,GBP-BRL,BTC-USD,BRL-USD');
                 const d = await r.json();
-                rates.usd = 1/parseFloat(d.USDBRL.bid); rates.eur = 1/parseFloat(d.EURBRL.bid);
-                document.getElementById('v-brl').textContent = `$ ${parseFloat(d.BRLUSD.bid).toFixed(2)}`;
-                document.getElementById('v-usd').textContent = `R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}`;
-                document.getElementById('v-eur').textContent = `R$ ${parseFloat(d.EURBRL.bid).toFixed(2)}`;
-                document.getElementById('v-gbp').textContent = `R$ ${parseFloat(d.GBPBRL.bid).toFixed(2)}`;
-                document.getElementById('v-btc').textContent = `$${Math.round(d.BTCUSD.bid/1000)}K`;
-                convert(document.getElementById('converter-input').value);
+                
+                rawRates.USD = parseFloat(d.USDBRL.bid); 
+                rawRates.EUR = parseFloat(d.EURBRL.bid);
+                
+                // LÓGICA DE TENDÊNCIA PARA TODAS AS MOEDAS
+                const getTrend = (pctStr) => {
+                    const pct = parseFloat(pctStr);
+                    if (isNaN(pct)) return '';
+                    const isUp = pct > 0;
+                    return `<span class="${isUp ? 'trend-up' : 'trend-down'}">${isUp ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%</span>`;
+                };
+                
+                document.getElementById('v-brl').innerHTML = `$ ${parseFloat(d.BRLUSD.bid).toFixed(2)} <br>${getTrend(d.BRLUSD.pctChange)}`;
+                document.getElementById('v-usd').innerHTML = `R$ ${parseFloat(d.USDBRL.bid).toFixed(2)} <br>${getTrend(d.USDBRL.pctChange)}`;
+                document.getElementById('v-eur').innerHTML = `R$ ${parseFloat(d.EURBRL.bid).toFixed(2)} <br>${getTrend(d.EURBRL.pctChange)}`;
+                document.getElementById('v-gbp').innerHTML = `R$ ${parseFloat(d.GBPBRL.bid).toFixed(2)} <br>${getTrend(d.GBPBRL.pctChange)}`;
+                document.getElementById('v-btc').innerHTML = `$${Math.round(d.BTCUSD.bid/1000)}K <br>${getTrend(d.BTCUSD.pctChange)}`;
+                
+                convert();
             } catch(e) {}
         }
 
-        function convert(v) { if(!v) v = 0; document.getElementById('c-usd').textContent = (v * rates.usd).toFixed(2); document.getElementById('c-eur').textContent = (v * rates.eur).toFixed(2); }
+        function convert() { 
+            let v = parseFloat(document.getElementById('converter-input').value) || 0; 
+            let base = document.getElementById('calc-base').value;
+            
+            let lbl1 = document.getElementById('c-lbl-1');
+            let val1 = document.getElementById('c-val-1');
+            let lbl2 = document.getElementById('c-lbl-2');
+            let val2 = document.getElementById('c-val-2');
 
-        function generatePass() {
-            const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-            let p = ""; for(let i=0; i<16; i++) p += c.charAt(Math.floor(Math.random() * c.length));
-            document.getElementById('generated-pass').textContent = p;
+            let valueInBRL = v;
+            if (base === 'USD') valueInBRL = v * rawRates.USD;
+            if (base === 'EUR') valueInBRL = v * rawRates.EUR;
+
+            if(base === 'BRL') {
+                lbl1.textContent = 'USD'; val1.textContent = (valueInBRL / rawRates.USD).toFixed(2);
+                lbl2.textContent = 'EUR'; val2.textContent = (valueInBRL / rawRates.EUR).toFixed(2);
+            } else if(base === 'USD') {
+                lbl1.textContent = 'BRL'; val1.textContent = valueInBRL.toFixed(2);
+                lbl2.textContent = 'EUR'; val2.textContent = (valueInBRL / rawRates.EUR).toFixed(2);
+            } else if(base === 'EUR') {
+                lbl1.textContent = 'BRL'; val1.textContent = valueInBRL.toFixed(2);
+                lbl2.textContent = 'USD'; val2.textContent = (valueInBRL / rawRates.USD).toFixed(2);
+            }
         }
 
-        function handleTask(e) { if (e.key === 'Enter' && e.target.value.trim() !== '') { tasks.push({ id: Date.now(), text: e.target.value, done: false }); e.target.value = ''; saveTasks(); } }
-        function toggleTask(id) { tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t); saveTasks(); }
-        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); saveTasks(); }
-        function saveTasks() { localStorage.setItem('user_tasks', JSON.stringify(tasks)); renderTasks(); }
         function renderTasks() {
             const list = document.getElementById('task-list');
             list.innerHTML = tasks.map(t => `<li style="display:flex; justify-content:space-between; padding:8px; background:rgba(255,255,255,0.03); margin-bottom:5px; border-radius:5px; font-size:0.85rem; ${t.done ? 'opacity:0.4; text-decoration:line-through;' : ''}"><span onclick="toggleTask(${t.id})" style="cursor:pointer">${t.text}</span><button onclick="deleteTask(${t.id})" style="background:none; border:none; color:#ff5252; cursor:pointer; font-weight:bold;">×</button></li>`).join('');
         }
+        
+        function generatePass() {
+            const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+            let p = ""; 
+            for(let i=0; i<16; i++) {
+                p += c.charAt(Math.floor(Math.random() * c.length));
+            }
+            document.getElementById('generated-pass').textContent = p;
+        }
 
+        // NOVA FUNÇÃO: COPIAR PALAVRA-PASSE
+        function copyPassword() {
+            const passEl = document.getElementById('generated-pass');
+            const passText = passEl.textContent;
+            
+            if (passText && passText !== '********' && passText !== 'COPIADA!') {
+                navigator.clipboard.writeText(passText).then(() => {
+                    passEl.style.color = '#4caf50'; // Fica verde
+                    passEl.textContent = 'COPIADA!';
+                    
+                    setTimeout(() => {
+                        passEl.style.color = 'var(--accent-color)';
+                        passEl.textContent = passText;
+                    }, 1000);
+                });
+            }
+        }
+
+        function handleTask(e) { 
+            if (e.key === 'Enter' && e.target.value.trim() !== '') { 
+                tasks.push({ id: Date.now(), text: e.target.value, done: false }); 
+                e.target.value = ''; localStorage.setItem('user_tasks', JSON.stringify(tasks)); renderTasks(); 
+            } 
+        }
+        function toggleTask(id) { tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t); localStorage.setItem('user_tasks', JSON.stringify(tasks)); renderTasks(); }
+        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); localStorage.setItem('user_tasks', JSON.stringify(tasks)); renderTasks(); }
+
+        async function monitorBateria() { 
+            if (navigator.getBattery) { 
+                document.getElementById('bat-txt').style.display = 'block';
+                try {
+                    const b = await navigator.getBattery(); 
+                    const u = () => { document.getElementById('bat-txt').textContent = `🔋 BATERIA: ${Math.round(b.level * 100)}% ${b.charging ? '⚡' : ''}`; }; 
+                    b.onlevelchange = u; b.onchargingchange = u; u(); 
+                } catch(e) {}
+            } else {
+                document.getElementById('bat-txt').style.display = 'none';
+            }
+        }
         async function fetchIP() { try { const r = await fetch('https://api.ipify.org?format=json'); const d = await r.json(); document.getElementById('ip-txt').textContent = d.ip; } catch(e){} }
         function checkNet() { const dot = document.getElementById('net-dot'); if(navigator.onLine) { dot.classList.add('status-online'); document.getElementById('net-status').textContent = "ONLINE"; } else { dot.classList.remove('status-online'); document.getElementById('net-status').textContent = "OFFLINE"; } }
-        async function monitorBateria() { if (navigator.getBattery) { const b = await navigator.getBattery(); const u = () => { document.getElementById('bat-txt').textContent = `${b.charging ? '⚡' : '🔋'} BATERIA: ${Math.round(b.level * 100)}%`; }; b.onlevelchange = u; b.onchargingchange = u; u(); } }
-        async function fetchNews() { try { const r = await fetch('https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=10'); const d = await r.json(); document.getElementById('news-ticker').innerHTML = d.items.map(n => `<span>${n.titulo.toUpperCase()}</span>`).join(''); } catch(e) {} }
-        async function sincronizar() { try { const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife'); const d = await r.json(); offset = new Date(d.datetime).getTime() - Date.now(); document.getElementById('sync-status').textContent = "SINC: ATÔMICO"; document.getElementById('sync-status').style.color = "#4caf50"; } catch(e) {} }
+        async function sincronizarTime() { try { const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife'); const d = await r.json(); offsetGlobal = new Date(d.datetime).getTime() - Date.now(); } catch(e) {} }
+        window.addEventListener('online', checkNet); window.addEventListener('offline', checkNet);
 
-        document.getElementById('notes-area').oninput = (e) => localStorage.setItem('user_notes', e.target.value);
-        window.onresize = initCanvas; window.addEventListener('online', checkNet); window.addEventListener('offline', checkNet);
-        init(); sincronizar(); setInterval(fetchFinance, 60000); setInterval(fetchNews, 300000); setInterval(sincronizar, 600000);
+        async function fetchNews() { try { const r = await fetch('https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=10'); const d = await r.json(); document.getElementById('news-ticker').innerHTML = d.items.map(n => `<span>${n.titulo.toUpperCase()}</span>`).join(''); } catch(e) {} }
+        
+        window.onresize = initCanvas;
+        
+        init();
+        setInterval(fetchFinance, 60000); 
+        setInterval(fetchNews, 300000);
+        setInterval(sincronizarTime, 600000);
     </script>
 </body>
 </html>
