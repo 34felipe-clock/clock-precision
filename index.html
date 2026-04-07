@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center Pro - v3.4.1</title>
+    <title>Command Center Pro - v3.7 (Beta)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -93,7 +93,6 @@
         #converter-input { background: #000; border: 1px solid var(--accent-color); color: #fff; width: 75px; padding: 5px; text-align: center; border-radius: 4px; outline: none; font-family: var(--font-main); }
 
         .status-row { display: flex; justify-content: center; gap: 30px; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; color: var(--accent-color); width: 100%; }
-        /* CORREÇÃO DO ALINHAMENTO DA BATERIA AQUI */
         #bat-txt { display: none; text-align: center; width: 100%; } 
 
         #world-clocks { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: 5px; }
@@ -134,6 +133,25 @@
             box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9), var(--inner-glow);
         }
         #settings-menu label { font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        
+        .settings-input-text {
+            width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2); background: #000; color: #fff;
+            outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif;
+        }
+        .settings-input-text:focus { border-color: var(--accent-color); }
+
+        .autocomplete-items {
+            position: absolute; top: 100%; left: 0; right: 0; z-index: 99;
+            background: #000; border: 1px solid var(--accent-color); border-radius: 4px;
+            max-height: 150px; overflow-y: auto; margin-top: 2px;
+        }
+        .autocomplete-items div {
+            padding: 8px; cursor: pointer; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .autocomplete-items div:hover {
+            background: var(--accent-color); color: #000; font-weight: bold;
+        }
 
         #news-ticker-container { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid var(--accent-color); padding: 8px 0; overflow: hidden; white-space: nowrap; font-size: 0.8rem; z-index: 100; font-weight: bold; }
         #news-ticker { display: inline-block; animation: ticker-scroll 90s linear infinite; color: #ccc; }
@@ -197,7 +215,13 @@
                 <option value="#241832">Midnight</option>
             </select>
         </label>
-        <button onclick="toggleSettings()" style="margin-top:10px; background:var(--accent-color); color:black; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:5px;">FECHAR</button>
+        <label style="flex-direction: column; align-items: flex-start; margin-top: 10px; position: relative;">
+            MONITORAR NOTÍCIAS DE:
+            <input type="text" id="input-news-region" class="settings-input-text" placeholder="Ex: Japão, Tecnologia..." autocomplete="off">
+            <div id="autocomplete-list" class="autocomplete-items"></div>
+        </label>
+        
+        <button onclick="toggleSettings()" style="margin-top:15px; background:var(--accent-color); color:black; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:5px;">FECHAR</button>
     </div>
 
     <div id="widget-container">
@@ -251,9 +275,9 @@
         </div>
     </div>
 
-    <div id="version-tag">&copy; <span id="current-year"></span> | VER: 3.4.1</div>
+    <div id="version-tag">&copy; <span id="current-year"></span> | VER: 3.7 (Beta)</div>
     
-    <div id="news-ticker-container"><div id="news-ticker">CONECTANDO AO FEED GLOBAL...</div></div>
+    <div id="news-ticker-container"><div id="news-ticker">CONECTANDO AO FEED DE NOTÍCIAS...</div></div>
 
     <script>
         const canvas = document.getElementById('bg-canvas');
@@ -263,12 +287,26 @@
         let rawRates = { BRL: 1, USD: 0, EUR: 0 };
         let tasks = JSON.parse(localStorage.getItem('user_tasks')) || [];
         
+        // RASTREADOR DO MOUSE PARA A ANIMAÇÃO DO FUNDO
+        let mouse = { x: null, y: null, radius: 150 };
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
         const config = {
             is24h: localStorage.getItem('is24h') !== 'false',
             showMs: localStorage.getItem('showMs') !== 'false',
             isManual: localStorage.getItem('isManual') === 'true',
             accentColor: localStorage.getItem('accentColor') || '#b377ff', 
-            tz: [localStorage.getItem('tz1') || 'America/New_York', localStorage.getItem('tz2') || 'Europe/London', localStorage.getItem('tz3') || 'Asia/Tokyo']
+            tz: [localStorage.getItem('tz1') || 'America/New_York', localStorage.getItem('tz2') || 'Europe/London', localStorage.getItem('tz3') || 'Asia/Tokyo'],
+            newsRegion: localStorage.getItem('newsRegion') || 'Petrolina'
         };
 
         const zones = [
@@ -282,11 +320,62 @@
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             particles = []; for(let i=0; i<60; i++) particles.push(new Particle());
         }
+        
         class Particle {
-            constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.speedX = Math.random()*0.4-0.2; this.speedY = Math.random()*0.4-0.2; }
-            update() { this.x += this.speedX; this.y += this.speedY; if(this.x>canvas.width||this.x<0)this.speedX*=-1; if(this.y>canvas.height||this.y<0)this.speedY*=-1; }
-            draw() { ctx.fillStyle = localStorage.getItem('accentColor') || '#b377ff'; ctx.beginPath(); ctx.arc(this.x,this.y,1.5,0,Math.PI*2); ctx.fill(); }
+            constructor() { 
+                this.x = Math.random()*canvas.width; 
+                this.y = Math.random()*canvas.height; 
+                this.speedX = Math.random()*0.4-0.2; 
+                this.speedY = Math.random()*0.4-0.2; 
+            }
+            update() { 
+                // Movimento base
+                this.x += this.speedX; 
+                this.y += this.speedY; 
+                
+                // Colisão com as bordas
+                if(this.x > canvas.width || this.x < 0) this.speedX *= -1; 
+                if(this.y > canvas.height || this.y < 0) this.speedY *= -1; 
+
+                // INTERAÇÃO COM O MOUSE (Atração Magnética)
+                if (mouse.x != null && mouse.y != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouse.radius) {
+                        // Move suavemente o ponto em direção ao cursor do mouse
+                        this.x += dx * 0.02;
+                        this.y += dy * 0.02;
+                    }
+                }
+            }
+            draw() { 
+                const color = localStorage.getItem('accentColor') || '#b377ff';
+                ctx.fillStyle = color; 
+                ctx.beginPath(); 
+                ctx.arc(this.x, this.y, 1.5, 0, Math.PI*2); 
+                ctx.fill(); 
+
+                // DESENHA A LINHA CONECTANDO AO MOUSE (Efeito Laser/Constelação)
+                if (mouse.x != null && mouse.y != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouse.radius) {
+                        ctx.beginPath();
+                        // Cria uma cor com transparência (opacity) para a linha
+                        ctx.strokeStyle = color + '44'; // '44' é a transparência em Hex
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
         }
+        
         function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
@@ -320,6 +409,13 @@
             aplicarCor(newColor);
         }
 
+        function atualizarRegiaoNoticias(novaRegiao) {
+            config.newsRegion = novaRegiao;
+            localStorage.setItem('newsRegion', novaRegiao);
+            document.getElementById('news-ticker').innerHTML = `<span>ATUALIZANDO FEED PARA: ${novaRegiao.toUpperCase()}...</span>`;
+            fetchNews();
+        }
+
         async function init() {
             initCanvas(); animate();
             
@@ -336,6 +432,48 @@
             document.getElementById('check-ms').checked = config.showMs;
             document.getElementById('check-manual').checked = config.isManual;
             document.getElementById('select-color').value = config.accentColor;
+            
+            const inputRegion = document.getElementById('input-news-region');
+            const listRegion = document.getElementById('autocomplete-list');
+            inputRegion.value = config.newsRegion;
+            
+            let debounceTimer;
+            inputRegion.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const val = this.value.trim();
+                listRegion.innerHTML = '';
+                
+                if (val.length < 3) return; 
+
+                debounceTimer = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(val)}&count=5&language=pt&format=json`);
+                        const data = await res.json();
+                        
+                        if (data.results) {
+                            data.results.forEach(city => {
+                                let item = document.createElement('div');
+                                let state = city.admin1 ? ` - ${city.admin1}` : '';
+                                item.innerHTML = `<strong>${city.name}</strong>${state} (${city.country})`;
+                                
+                                item.onclick = () => {
+                                    inputRegion.value = city.name; 
+                                    listRegion.innerHTML = ''; 
+                                    atualizarRegiaoNoticias(city.name); 
+                                };
+                                listRegion.appendChild(item);
+                            });
+                        }
+                    } catch(err) {}
+                }, 400); 
+            });
+
+            inputRegion.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    listRegion.innerHTML = '';
+                    atualizarRegiaoNoticias(this.value.trim() || 'Brasil');
+                }
+            });
             
             document.getElementById('check-24h').onchange = (e) => { config.is24h = e.target.checked; localStorage.setItem('is24h', config.is24h); };
             document.getElementById('check-ms').onchange = (e) => { config.showMs = e.target.checked; localStorage.setItem('showMs', config.showMs); };
@@ -521,15 +659,42 @@
         async function fetchIP() { try { const r = await fetch('https://api.ipify.org?format=json'); const d = await r.json(); document.getElementById('ip-txt').textContent = d.ip; } catch(e){} }
         function checkNet() { const dot = document.getElementById('net-dot'); if(navigator.onLine) { dot.classList.add('status-online'); document.getElementById('net-status').textContent = "ONLINE"; } else { dot.classList.remove('status-online'); document.getElementById('net-status').textContent = "OFFLINE"; } }
         async function sincronizarTime() { try { const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife'); const d = await r.json(); offsetGlobal = new Date(d.datetime).getTime() - Date.now(); } catch(e) {} }
+        
+        document.addEventListener('click', function(e) {
+            if (e.target.id !== 'input-news-region') {
+                document.getElementById('autocomplete-list').innerHTML = '';
+            }
+        });
+
         window.addEventListener('online', checkNet); window.addEventListener('offline', checkNet);
 
-        async function fetchNews() { try { const r = await fetch('https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=10'); const d = await r.json(); document.getElementById('news-ticker').innerHTML = d.items.map(n => `<span>${n.titulo.toUpperCase()}</span>`).join(''); } catch(e) {} }
+        async function fetchNews() { 
+            try { 
+                const cidade = config.newsRegion;
+                const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cidade)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
+                const apiPonte = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+                const r = await fetch(apiPonte, { cache: 'no-store' }); 
+                const d = await r.json(); 
+
+                if(d.status === 'ok' && d.items.length > 0) {
+                    document.getElementById('news-ticker').innerHTML = d.items.map(n => 
+                        `<span>[${cidade.toUpperCase()}] ${n.title.toUpperCase()}</span>`
+                    ).join(''); 
+                } else {
+                    document.getElementById('news-ticker').innerHTML = `<span>NENHUMA NOTÍCIA RECENTE ENCONTRADA PARA: ${cidade.toUpperCase()}</span>`;
+                }
+            } catch(e) { 
+                console.log(e);
+                document.getElementById('news-ticker').innerHTML = "<span>ERRO AO CONECTAR AO FEED GLOBAL DE NOTÍCIAS. TENTANDO NOVAMENTE...</span>";
+            } 
+        }
         
         window.onresize = initCanvas;
         
         init();
         setInterval(fetchFinance, 60000); 
-        setInterval(fetchNews, 300000);
+        setInterval(fetchNews, 300000); 
         setInterval(sincronizarTime, 600000);
     </script>
 </body>
