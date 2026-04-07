@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center Pro - v3.4</title>
+    <title>Command Center Pro - v3.4.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -91,6 +91,10 @@
         #calc-base { background: transparent; border: none; color: var(--accent-color); font-size: 0.65rem; font-weight: bold; text-transform: uppercase; outline: none; cursor: pointer; }
         #calc-base option, .city-select option { background: #150a21; color: #fff; }
         #converter-input { background: #000; border: 1px solid var(--accent-color); color: #fff; width: 75px; padding: 5px; text-align: center; border-radius: 4px; outline: none; font-family: var(--font-main); }
+
+        .status-row { display: flex; justify-content: center; gap: 30px; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; color: var(--accent-color); width: 100%; }
+        /* CORREÇÃO DO ALINHAMENTO DA BATERIA AQUI */
+        #bat-txt { display: none; text-align: center; width: 100%; } 
 
         #world-clocks { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: 5px; }
         .city-select { background: transparent; border: none; color: #666; font-size: 0.6rem; text-transform: uppercase; outline: none; text-align-last: center; cursor: pointer; font-family: inherit; }
@@ -247,7 +251,7 @@
         </div>
     </div>
 
-    <div id="version-tag">&copy; <span id="current-year"></span> | VER: 3.4</div>
+    <div id="version-tag">&copy; <span id="current-year"></span> | VER: 3.4.1</div>
     
     <div id="news-ticker-container"><div id="news-ticker">CONECTANDO AO FEED GLOBAL...</div></div>
 
@@ -415,7 +419,6 @@
 
         async function fetchFinance() {
             try {
-                // AQUI ESTÁ O AJUSTE PARA FORÇAR OS DADOS ATUALIZADOS SEMPRE
                 const r = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,GBP-BRL,BTC-USD,BRL-USD', { cache: 'no-store' });
                 const d = await r.json();
                 
