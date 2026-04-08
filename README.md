@@ -1,53 +1,74 @@
-# 🚀 Command Center Pro
+# 🛰️ Command Center Pro
 
-Um painel de controle pessoal no estilo *Neon Dark* construído para rodar localmente no navegador. Ele unifica ferramentas diárias, indicadores financeiros, clima e utilitários de sistema em uma única interface imersiva, sem a necessidade de frameworks ou instalações complexas.
+[![Status](https://img.shields.io/badge/Status-Definitive_Edition-success?style=flat-square)](#)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](#)
+[![Tech](https://img.shields.io/badge/Tech-HTML5_|_CSS3_|_Vanilla_JS-orange?style=flat-square)](#)
 
-![Versão](https://img.shields.io/badge/Versão-3.4-b377ff.svg)
-![Tecnologias](https://img.shields.io/badge/HTML5%20|%20CSS3%20|%20Vanilla%20JS-Dark-black.svg)
+**[Português]** | [English](#english-version)
 
-## ✨ Funcionalidades (v3.4)
+O **Command Center Pro** é um painel de controlo pessoal tático, desenhado com uma estética cibernética e futurista. Ele reúne informações vitais do dia a dia (clima, notícias locais, cotações financeiras) e ferramentas de produtividade numa interface elegante, altamente responsiva e contida **num único ficheiro HTML**.
 
-* 🕒 **Relógio Atômico Neon:** Sincronizado via API mundial, com suporte a milissegundos, formato 12h/24h, relógios globais e animação pulsante.
-* 📈 **Painel Financeiro:** Cotações em tempo real (USD, EUR, GBP, BTC) com indicadores visuais de tendência (▲/▼) e um conversor de moedas integrado.
-* 🌤️ **Clima e Previsão:** Leitura automática de geolocalização mostrando temperatura, vento, umidade e previsão detalhada para os próximos 7 dias.
-* 🛡️ **Segurança:** Gerador de senhas militares (16 caracteres) com função inteligente de *Clique para Copiar* e feedback visual.
-* 📝 **Produtividade:** Sistema de tarefas (To-Do list) e bloco de notas rápidos com salvamento automático no navegador.
-* 🖥️ **Status do Sistema:** Monitoramento de IP local, status de conexão (Online/Offline) e nível de bateria do dispositivo.
-* 📰 **Feed de Notícias:** Ticker com rolagem contínua exibindo as últimas manchetes.
+## ✨ Funcionalidades Principais
 
-## 🛠️ Como Usar
+* 🌌 **Fundo "Constelação" Interativo:** Um motor visual em Canvas (HTML5) que gera partículas dinâmicas. O fundo reage ao movimento do rato, criando atrações magnéticas e desenhando ligações "laser" numa simulação de rede neural.
+* 🌦️ **Meteorologia Avançada:** Deteta automaticamente a tua localização e fornece a previsão para 7 dias, além de um painel detalhado de 12 horas com percentagem exata de probabilidade de precipitação.
+* 📰 **Motor de Notícias Hiper-Local:** Mantém-te atualizado com as manchetes da tua região. Inclui um sistema inteligente de *autocompletar* para procurar cidades e regiões a nível global.
+* 🎨 **Sistema de Temas Dinâmico:** Não muda apenas a cor do néon. O painel altera toda a paleta de cores, incluindo o fundo do ecrã e o vidro translúcido, com transições suaves (fade). Inclui temas premium como *Cyber Teal* e *Vulcan Orange*.
+* 📈 **Módulo Financeiro e Ferramentas:** Cotações de moedas em tempo real (USD, EUR, GBP, BTC), relógios mundiais, conversor de moeda integrado e monitor de estado da rede/bateria.
+* 🗄️ **Painel Lateral Oculto:** Clica em "Centro de Comando" para revelar um painel de produtividade com:
+    * Bloco de Notas (guardado localmente)
+    * Lista de Tarefas (To-Do)
+    * Gerador de Passwords de Alta Segurança
 
-O Command Center Pro foi desenhado para ser leve e *plug-and-play*.
-1. Baixe ou clone este repositório.
-2. Dê um duplo clique no arquivo `index.html` para abri-lo em qualquer navegador moderno.
-3. Aproveite o seu painel de controle! (Nenhuma instalação de servidor é necessária).
+## 🚀 Como Usar
 
-## 🎨 Personalização
-Você pode acessar o menu de configurações (ícone de engrenagem) para alterar a cor do tema Neon, ativar/desativar milissegundos e alternar o formato de horas.
+O projeto é 100% "Plug & Play". Não precisa de servidores, base de dados ou instalação de dependências.
 
-# 🚀 Command Center Pro
+1. Faz o download do ficheiro `index.html`.
+2. Dá um duplo clique para abrir em qualquer navegador web moderno (Chrome, Edge, Firefox, Safari).
+3. Todas as tuas configurações, notas e tarefas são guardadas automaticamente no *Local Storage* do teu navegador.
 
-A personal *Neon Dark* themed control panel built to run locally in your browser. It unifies daily tools, financial indicators, weather, and system utilities into a single immersive interface, without the need for frameworks or complex installations.
+## 📡 APIs Utilizadas
 
-![Version](https://img.shields.io/badge/Version-3.4-b377ff.svg)
-![Tech Stack](https://img.shields.io/badge/HTML5%20|%20CSS3%20|%20Vanilla%20JS-Dark-black.svg)
+Este painel é alimentado pelas seguintes APIs públicas (gratuitas e sem chave):
+* [Open-Meteo](https://open-meteo.com/): Dados meteorológicos e sistema de geocodificação de cidades.
+* [Google News via RSS2JSON](https://rss2json.com/): Motor de notícias locais.
+* [AwesomeAPI](https://docs.awesomeapi.com.br/): Cotações de moedas e criptomoedas.
+* [WorldTimeAPI](http://worldtimeapi.org/): Sincronização de fuso horário.
+* [ipify](https://www.ipify.org/): Deteção do endereço IP público.
 
-## ✨ Features (v3.4)
+---
 
-* 🕒 **Neon Atomic Clock:** Synchronized via world API, featuring milliseconds support, 12h/24h format, global clocks, and a pulsating border animation.
-* 📈 **Financial Dashboard:** Real-time live rates (USD, EUR, GBP, BTC) with visual trend arrows (▲/▼) and a built-in currency converter.
-* 🌤️ **Weather Forecast:** Automatic geolocation detection showing temperature, wind speed, humidity, and a 7-day forecast grid.
-* 🛡️ **Security:** Military-grade password generator (16 characters) with a smart *Click to Copy* feature and visual feedback.
-* 📝 **Productivity:** Quick task system (To-Do list) and notepad with automatic local browser storage.
-* 🖥️ **System Status:** Live monitoring of your IP address, network connection status (Online/Offline), and device battery level.
-* 📰 **News Ticker:** Continuous scrolling ticker displaying the latest global headlines.
+<a name="english-version"></a>
+# 🛰️ Command Center Pro (English)
 
-## 🛠️ How to Use
+The **Command Center Pro** is a tactical personal dashboard designed with a futuristic and cybernetic aesthetic. It gathers vital daily information (weather, local news, financial quotes) and productivity tools into an elegant, highly responsive interface contained **in a single HTML file**.
 
-Command Center Pro is designed to be lightweight and plug-and-play.
-1. Download or clone this repository.
-2. Double-click the `index.html` file to open it in any modern web browser.
-3. Enjoy your new dashboard! (No server installation required).
+## ✨ Key Features
 
-## 🎨 Customization
-You can access the settings menu (gear icon) to change the Neon theme color, toggle milliseconds, and switch the time format.
+* 🌌 **Interactive "Constellation" Background:** An HTML5 Canvas visual engine that generates dynamic particles. The background reacts to your mouse movement, creating magnetic attractions and drawing "laser" links in a neural network simulation.
+* 🌦️ **Advanced Weather:** Automatically detects your location and provides a 7-day forecast, plus a detailed 12-hour timeline with exact rain probability percentages.
+* 📰 **Hyper-Local News Engine:** Stay updated with headlines from your region. Includes a smart *autocomplete* system to search for cities and regions worldwide.
+* 🎨 **Dynamic Theme System:** It doesn't just change the neon color. The dashboard shifts the entire color palette, including the background and translucent glass, with smooth transitions. Includes premium themes like *Cyber Teal* and *Vulcan Orange*.
+* 📈 **Financial Module & Tools:** Real-time currency quotes (USD, EUR, GBP, BTC), world clocks, built-in currency converter, and network/battery status monitor.
+* 🗄️ **Hidden Tactical Sidebar:** Click "Command Center" to reveal a productivity panel featuring:
+    * Notepad (saved locally)
+    * To-Do List Manager
+    * High-Security Password Generator
+
+## 🚀 How to Use
+
+This project is 100% "Plug & Play". It requires no servers, databases, or dependency installations.
+
+1. Download the `index.html` file.
+2. Double-click to open it in any modern web browser (Chrome, Edge, Firefox, Safari).
+3. All your settings, notes, and tasks are automatically saved in your browser's *Local Storage*.
+
+## 📡 APIs Used
+
+This dashboard is powered by the following public APIs (free and keyless):
+* [Open-Meteo](https://open-meteo.com/): Weather data and city geocoding system.
+* [Google News via RSS2JSON](https://rss2json.com/): Local news engine.
+* [AwesomeAPI](https://docs.awesomeapi.com.br/): Currency and crypto quotes.
+* [WorldTimeAPI](http://worldtimeapi.org/): Timezone synchronization.
+* [ipify](https://www.ipify.org/): Public IP address detection.
