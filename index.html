@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center Pro - v3.8.1</title>
+    <title>Command Center Pro - v3.9.1 (Beta)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -31,7 +31,6 @@
             z-index: 5; width: 95%; max-width: 700px;
         }
 
-        /* RELÓGIO COM ANIMAÇÃO NEON PULSANTE */
         #relogio {
             font-family: var(--font-main); font-size: 3.5rem; font-weight: bold;
             padding: 30px; border-radius: 20px; width: 100%; box-sizing: border-box;
@@ -61,6 +60,7 @@
         .main-buttons-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;
         }
+        .btn-full { grid-column: 1 / -1; }
 
         .action-btn {
             background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px;
@@ -97,14 +97,8 @@
         .forecast-rain { font-size: 0.5rem; color: #4caf50; margin-top: 3px; font-weight: bold;}
 
         /* ESPECÍFICO STATUS (DOWNDETECTOR GRID) */
-        .downdetector-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 20px;
-        }
-        .status-card {
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;
-            padding: 15px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.3s;
-        }
+        .downdetector-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 20px; }
+        .status-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 15px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; }
         .status-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
         .status-name { font-size: 0.75rem; font-weight: bold; color: #fff; margin-bottom: 8px; }
         .status-indicator { font-size: 0.6rem; font-weight: bold; padding: 4px 8px; border-radius: 10px; color: #000; letter-spacing: 1px; width: 80%; }
@@ -112,16 +106,22 @@
         .ind-warning { background: #ffbf00; box-shadow: 0 0 10px rgba(255, 191, 0, 0.4); }
         .ind-offline { background: #ff5252; color: #fff; box-shadow: 0 0 10px rgba(255, 82, 82, 0.4); }
 
+        /* ESPECÍFICO DIAGNÓSTICO (REDE) */
+        .diag-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .diag-title { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .diag-value { font-family: var(--font-main); font-size: 1.4rem; color: var(--accent-color); font-weight: bold; }
+        .diag-btn { background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; font-weight: bold; transition: 0.3s; }
+        .diag-btn:hover { background: var(--accent-color); color: #000; }
+        .diag-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* WIDGETS INFERIORES */
         #finance-bar { display: flex; justify-content: space-around; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 15px; }
         .finance-item { text-align: center; font-size: 0.6rem; color: #888; text-transform: uppercase; }
         .finance-item b { color: #fff; display: block; font-size: 0.8rem; }
         .trend-up { color: #ff5252; font-size: 0.6rem; margin-left: 4px; }
         .trend-down { color: #4caf50; font-size: 0.6rem; margin-left: 4px; }
 
-        #converter-tool {
-            background: rgba(255,255,255,0.02); border-radius: 8px; padding: 10px;
-            margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05);
-        }
+        #converter-tool { background: rgba(255,255,255,0.02); border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
         #calc-base { background: transparent; border: none; color: var(--accent-color); font-size: 0.65rem; font-weight: bold; text-transform: uppercase; outline: none; cursor: pointer; }
         #calc-base option, .city-select option { background: #150a21; color: #fff; }
         #converter-input { background: #000; border: 1px solid var(--accent-color); color: #fff; width: 75px; padding: 5px; text-align: center; border-radius: 4px; outline: none; font-family: var(--font-main); }
@@ -133,27 +133,13 @@
         .city-select { background: transparent; border: none; color: #666; font-size: 0.6rem; text-transform: uppercase; outline: none; text-align-last: center; cursor: pointer; font-family: inherit; }
         .city-time { font-size: 1.1rem; color: var(--accent-color); font-weight: bold; text-align: center; }
 
-        #status-footer {
-            margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex; justify-content: center; gap: 20px; font-size: 0.65rem; color: #666; text-transform: uppercase;
-        }
+        #status-footer { margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: center; gap: 20px; font-size: 0.65rem; color: #666; text-transform: uppercase; }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: #ff5252; margin-right: 5px; }
         .status-online { background: #4caf50; box-shadow: 0 0 8px #4caf50; }
 
-        #sidebar {
-            position: fixed; right: -320px; top: 0; width: 310px; height: 100vh;
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
-            border-left: 2px solid var(--accent-color); transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); z-index: 1000; padding: 25px; box-sizing: border-box;
-            display: flex; flex-direction: column;
-            transition: background 0.6s ease, border-color 0.6s ease, right 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-        }
+        #sidebar { position: fixed; right: -320px; top: 0; width: 310px; height: 100vh; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-left: 2px solid var(--accent-color); transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); z-index: 1000; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column; }
         #sidebar.active { right: 0; }
-        #sidebar-trigger {
-            position: fixed; right: 0; top: 50%; transform: translateY(-50%);
-            background: var(--accent-color); color: #000; padding: 20px 6px;
-            border-radius: 10px 0 0 10px; cursor: pointer; font-weight: bold; font-size: 0.65rem; writing-mode: vertical-rl; z-index: 1001; letter-spacing: 2px;
-            transition: background 0.6s ease;
-        }
+        #sidebar-trigger { position: fixed; right: 0; top: 50%; transform: translateY(-50%); background: var(--accent-color); color: #000; padding: 20px 6px; border-radius: 10px 0 0 10px; cursor: pointer; font-weight: bold; font-size: 0.65rem; writing-mode: vertical-rl; z-index: 1001; letter-spacing: 2px; transition: background 0.6s ease; }
         .sidebar-tabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
         .tab-btn { background: none; border: none; color: #666; cursor: pointer; font-weight: bold; font-size: 0.75rem; padding: 5px 10px; transition: 0.3s; }
         .tab-btn.active { color: var(--accent-color); border-bottom: 2px solid var(--accent-color); }
@@ -161,34 +147,15 @@
         .sidebar-content.active { display: block; }
         #notes-area { width: 100%; height: 80%; background: transparent; border: none; color: #eee; font-family: inherit; resize: none; outline: none; line-height: 1.6; }
 
-        #settings-menu {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
-            border: 2px solid var(--accent-color); padding: 25px; border-radius: 15px;
-            z-index: 10000; display: none; flex-direction: column; gap: 15px; width: 280px;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9), var(--inner-glow);
-            transition: background 0.6s ease, border-color 0.6s ease;
-        }
+        #settings-menu { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--accent-color); padding: 25px; border-radius: 15px; z-index: 10000; display: none; flex-direction: column; gap: 15px; width: 280px; box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9), var(--inner-glow); transition: background 0.6s ease, border-color 0.6s ease; }
         #settings-menu label { font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
         
-        .settings-input-text {
-            width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.2); background: #000; color: #fff;
-            outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif;
-        }
+        .settings-input-text { width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: #000; color: #fff; outline: none; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         .settings-input-text:focus { border-color: var(--accent-color); }
 
-        .autocomplete-items {
-            position: absolute; top: 100%; left: 0; right: 0; z-index: 99;
-            background: #000; border: 1px solid var(--accent-color); border-radius: 4px;
-            max-height: 150px; overflow-y: auto; margin-top: 2px;
-        }
-        .autocomplete-items div {
-            padding: 8px; cursor: pointer; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .autocomplete-items div:hover {
-            background: var(--accent-color); color: #000; font-weight: bold;
-        }
+        .autocomplete-items { position: absolute; top: 100%; left: 0; right: 0; z-index: 99; background: #000; border: 1px solid var(--accent-color); border-radius: 4px; max-height: 150px; overflow-y: auto; margin-top: 2px; }
+        .autocomplete-items div { padding: 8px; cursor: pointer; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .autocomplete-items div:hover { background: var(--accent-color); color: #000; font-weight: bold; }
 
         #news-ticker-container { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid var(--accent-color); padding: 8px 0; overflow: hidden; white-space: nowrap; font-size: 0.8rem; z-index: 100; font-weight: bold; transition: border-color 0.6s ease; }
         #news-ticker { display: inline-block; animation: ticker-scroll 90s linear infinite; color: #ccc; }
@@ -197,10 +164,7 @@
 
         @keyframes ticker-scroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
-        #version-tag { 
-            position: fixed; bottom: 45px; right: 15px; font-size: 0.75rem; 
-            color: #555; font-family: var(--font-main); z-index: 90; letter-spacing: 1px;
-        }
+        #version-tag { position: fixed; bottom: 45px; right: 15px; font-size: 0.75rem; color: #555; font-family: var(--font-main); z-index: 90; letter-spacing: 1px; }
 
         @media (max-width: 600px) {
             #relogio { font-size: 2.2rem; }
@@ -235,6 +199,45 @@
         <button onclick="toggleModal('status-modal')" style="margin-top:30px; width:100%; padding:12px; background:var(--accent-color); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition: background 0.6s ease;">FECHAR RADAR</button>
     </div>
 
+    <div id="network-modal" class="custom-modal">
+        <h3 style="margin:0; color:var(--accent-color); letter-spacing:2px; font-size: 1rem; margin-bottom:15px;">MONITOR DE REDE AVANÇADO</h3>
+        
+        <div class="diag-box" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div class="diag-title">TERMINAL DE PING HTTP</div>
+                    <div style="font-size:0.6rem; color:#666;">Simulador de resposta ICMP via Fetch</div>
+                </div>
+            </div>
+            <div style="display: flex; width: 100%; gap: 10px;">
+                <input type="text" id="ping-target" class="settings-input-text" style="margin-top:0;" placeholder="ex: www.google.com" onkeypress="if(event.key === 'Enter') runCustomPing()">
+                <button id="btn-custom-ping" class="diag-btn" onclick="runCustomPing()">PING</button>
+            </div>
+            <pre id="ping-terminal" style="width: 100%; background: #000; color: #4caf50; padding: 10px; border-radius: 5px; font-family: var(--font-main); font-size: 0.75rem; min-height: 100px; margin: 0; white-space: pre-wrap; box-sizing: border-box; overflow-x: auto;">Aguardando destino...</pre>
+        </div>
+
+        <div class="diag-box">
+            <div>
+                <div class="diag-title">LARGURA DE BANDA ESTIMADA</div>
+                <div style="font-size:0.6rem; color:#666;">Teste de transferência passiva</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div class="diag-value" id="speed-value" style="font-size: 1rem;">-- Mbps</div>
+                <button class="diag-btn" id="btn-speed" onclick="runSpeedTest()">TESTAR</button>
+            </div>
+        </div>
+
+        <div class="diag-box">
+            <div>
+                <div class="diag-title">EQUIPAMENTO LOCAL / GATEWAY</div>
+                <div style="font-size:0.6rem; color:#666;">Endereço: <span id="lbl-router-ip">192.168.88.1</span></div>
+            </div>
+            <div class="diag-value" id="router-status" style="font-size:0.8rem; color:#888;">AGUARDAR...</div>
+        </div>
+
+        <button onclick="toggleModal('network-modal')" style="margin-top:20px; width:100%; padding:12px; background:var(--accent-color); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition: background 0.6s ease;">FECHAR MODO MONITOR</button>
+    </div>
+
     <div id="sidebar-trigger" onclick="toggleSidebar()">CENTRO DE COMANDO</div>
     <div id="sidebar">
         <div class="sidebar-tabs">
@@ -242,11 +245,8 @@
             <button class="tab-btn" onclick="showTab('tasks', event)">TAREFAS</button>
             <button class="tab-btn" onclick="showTab('sec', event)">SEGURANÇA</button>
         </div>
-
         <div id="tab-notes" class="sidebar-content active"><textarea id="notes-area" placeholder="Anotações rápidas..."></textarea></div>
-        
         <div id="tab-tasks" class="sidebar-content"><input type="text" id="task-input" placeholder="+ Tarefa" onkeypress="handleTask(event)" style="width:100%; padding:8px; background:#000; border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:4px; outline:none;"><ul id="task-list" style="padding:0; list-style:none; margin-top:10px;"></ul></div>
-        
         <div id="tab-sec" class="sidebar-content">
             <div style="text-align:center; background:rgba(0,0,0,0.2); padding:15px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
                 <span style="font-size:0.6rem; color:#888;">GERADOR DE SENHA MILITAR</span>
@@ -254,7 +254,6 @@
                 <button onclick="generatePass()" style="background:var(--accent-color); border:none; padding:10px; width:100%; font-weight:bold; cursor:pointer; border-radius:5px; color:#000; transition: background 0.6s ease;">GERAR NOVA SENHA</button>
             </div>
         </div>
-
         <button onclick="toggleSidebar()" style="margin-top:auto; width:100%; padding:12px; background:var(--accent-color); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition: background 0.6s ease;">FECHAR</button>
     </div>
 
@@ -269,10 +268,14 @@
                 <option value="#00ffff">Cyan</option>
                 <option value="#ffbf00">Gold</option>
                 <option value="#ff00ff">Pink</option>
-                <option value="#241832">Midnight</option>
+                <option value="#5e35b1">Midnight</option>
                 <option value="#00eadc">Cyber Teal</option>
                 <option value="#ff6600">Vulcan Orange</option>
             </select>
+        </label>
+        <label style="flex-direction: column; align-items: flex-start; margin-top: 10px; position: relative;">
+            IP DO GATEWAY (LOCAL):
+            <input type="text" id="input-router-ip" class="settings-input-text" placeholder="Ex: 192.168.88.1" onchange="updateRouterIp(this.value)">
         </label>
         <label style="flex-direction: column; align-items: flex-start; margin-top: 10px; position: relative;">
             MONITORAR NOTÍCIAS DE:
@@ -290,7 +293,6 @@
         </div>
         
         <div id="info-panel">
-            
             <div class="main-buttons-grid">
                 <div class="action-btn" onclick="toggleModal('weather-modal')" title="Ver Meteorologia Completa">
                     <div class="action-title">LOCAL 📍 <span id="loc-txt" style="color:var(--accent-color);">BUSCANDO...</span></div>
@@ -300,6 +302,11 @@
                 <div class="action-btn" onclick="openRadar()" title="Ver Estado dos Servidores Globais">
                     <div class="action-title">STATUS DA REDE 🌐</div>
                     <div class="action-value" style="color:var(--accent-color); font-size:0.75rem; letter-spacing:1px; margin-top:5px;">RADAR GLOBAL</div>
+                </div>
+
+                <div class="action-btn btn-full" onclick="openNetworkMonitor()" title="Monitorização de Hardware e Rede Local">
+                    <div class="action-title">DIAGNÓSTICO 📡</div>
+                    <div class="action-value" style="color:var(--accent-color); font-size:0.75rem; letter-spacing:1px; margin-top:5px;">REDE LOCAL & PING MANUAL</div>
                 </div>
             </div>
             
@@ -340,7 +347,7 @@
         </div>
     </div>
 
-    <div id="version-tag">&copy; <span id="current-year"></span> | VER: 3.8.1</div>
+    <div id="version-tag">&copy; <span id="current-year"></span> | VER: 3.9.1 (BETA)</div>
     
     <div id="news-ticker-container"><div id="news-ticker">CONECTANDO AO FEED DE NOTÍCIAS...</div></div>
 
@@ -351,18 +358,12 @@
         let offsetGlobal = 0;
         let rawRates = { BRL: 1, USD: 0, EUR: 0 };
         let tasks = JSON.parse(localStorage.getItem('user_tasks')) || [];
+        let localRouterInterval;
         
         let mouse = { x: null, y: null, radius: 150 };
 
-        window.addEventListener('mousemove', (event) => {
-            mouse.x = event.x;
-            mouse.y = event.y;
-        });
-
-        window.addEventListener('mouseout', () => {
-            mouse.x = null;
-            mouse.y = null;
-        });
+        window.addEventListener('mousemove', (event) => { mouse.x = event.x; mouse.y = event.y; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
 
         const config = {
             is24h: localStorage.getItem('is24h') !== 'false',
@@ -370,7 +371,8 @@
             isManual: localStorage.getItem('isManual') === 'true',
             accentColor: localStorage.getItem('accentColor') || '#b377ff', 
             tz: [localStorage.getItem('tz1') || 'America/New_York', localStorage.getItem('tz2') || 'Europe/London', localStorage.getItem('tz3') || 'Asia/Tokyo'],
-            newsRegion: localStorage.getItem('newsRegion') || 'Petrolina'
+            newsRegion: localStorage.getItem('newsRegion') || 'Petrolina',
+            routerIp: localStorage.getItem('routerIp') || '192.168.88.1' 
         };
 
         const zones = [
@@ -386,12 +388,11 @@
             '#00ffff': { accent: '#00ffff', bg: '#051515', glass: 'rgba(5, 20, 20, 0.85)' }, 
             '#ffbf00': { accent: '#ffbf00', bg: '#1a1300', glass: 'rgba(30, 20, 5, 0.85)' }, 
             '#ff00ff': { accent: '#ff00ff', bg: '#1a051a', glass: 'rgba(30, 5, 30, 0.85)' }, 
-            '#241832': { accent: '#241832', bg: '#0a0510', glass: 'rgba(10, 5, 15, 0.85)' }, 
+            '#5e35b1': { accent: '#5e35b1', bg: '#0a0510', glass: 'rgba(10, 5, 15, 0.85)' }, /* Midnight Equilibrado */
             '#00eadc': { accent: '#00eadc', bg: '#071121', glass: 'rgba(5, 15, 30, 0.85)' },
             '#ff6600': { accent: '#ff6600', bg: '#140800', glass: 'rgba(30, 12, 0, 0.85)' } 
         };
 
-        // LISTA ALARGADA DE SISTEMAS (ESTILO DOWNDETECTOR)
         const systemsToMonitor = [
             { name: "OpenAI", url: "https://status.openai.com/api/v2/status.json" },
             { name: "GitHub", url: "https://www.githubstatus.com/api/v2/status.json" },
@@ -400,15 +401,7 @@
             { name: "Cloudflare", url: "https://www.cloudflarestatus.com/api/v2/status.json" },
             { name: "Notion", url: "https://status.notion.so/api/v2/status.json" },
             { name: "Vercel", url: "https://www.vercel-status.com/api/v2/status.json" },
-            { name: "Zoom", url: "https://status.zoom.us/api/v2/status.json" },
-            { name: "Figma", url: "https://status.figma.com/api/v2/status.json" },
-            { name: "Dropbox", url: "https://status.dropbox.com/api/v2/status.json" },
-            { name: "Epic Games", url: "https://status.epicgames.com/api/v2/status.json" },
-            { name: "Canva", url: "https://status.canva.com/api/v2/status.json" },
-            { name: "Trello", url: "https://trello.status.atlassian.com/api/v2/status.json" },
-            { name: "Asana", url: "https://status.asana.com/api/v2/status.json" },
-            { name: "X API", url: "https://api.twitterstat.us/api/v2/status.json" },
-            { name: "Linode", url: "https://status.linode.com/api/v2/status.json" }
+            { name: "Zoom", url: "https://status.zoom.us/api/v2/status.json" }
         ];
 
         function initCanvas() {
@@ -421,29 +414,21 @@
                 this.x += this.speedX; this.y += this.speedY; 
                 if(this.x>canvas.width||this.x<0)this.speedX*=-1; 
                 if(this.y>canvas.height||this.y<0)this.speedY*=-1; 
-                
                 if (mouse.x != null && mouse.y != null) {
                     let dx = mouse.x - this.x; let dy = mouse.y - this.y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < mouse.radius) {
-                        this.x += dx * 0.02; this.y += dy * 0.02;
-                    }
+                    if (distance < mouse.radius) { this.x += dx * 0.02; this.y += dy * 0.02; }
                 }
             }
             draw() { 
                 const color = localStorage.getItem('accentColor') || '#b377ff';
                 ctx.fillStyle = color; ctx.beginPath(); ctx.arc(this.x,this.y,1.5,0,Math.PI*2); ctx.fill(); 
-                
                 if (mouse.x != null && mouse.y != null) {
                     let dx = mouse.x - this.x; let dy = mouse.y - this.y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < mouse.radius) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = color + '44'; 
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(this.x, this.y);
-                        ctx.lineTo(mouse.x, mouse.y);
-                        ctx.stroke();
+                        ctx.beginPath(); ctx.strokeStyle = color + '44'; ctx.lineWidth = 0.5;
+                        ctx.moveTo(this.x, this.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
                     }
                 }
             }
@@ -453,20 +438,136 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         function toggleSettings() { const s = document.getElementById('settings-menu'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
         
-        // FUNÇÃO GENÉRICA PARA ABRIR MODAIS
         function toggleModal(modalId) { 
             const m = document.getElementById(modalId);
             m.classList.toggle('active');
+            
+            if(modalId === 'network-modal') {
+                if(m.classList.contains('active')) {
+                    document.getElementById('lbl-router-ip').textContent = config.routerIp;
+                    checkLocalRouter();
+                    localRouterInterval = setInterval(checkLocalRouter, 5000);
+                } else {
+                    clearInterval(localRouterInterval);
+                }
+            }
         }
 
         function openRadar() {
             toggleModal('status-modal');
             const grid = document.getElementById('downdetector-grid');
-            if (grid.innerHTML.includes("Aguardando") || grid.children.length === 1) {
-                checkSystems();
-            }
+            if (grid.innerHTML.includes("Aguardando") || grid.children.length === 1) { checkSystems(); }
         }
         
+        function openNetworkMonitor() { toggleModal('network-modal'); }
+
+        async function runCustomPing() {
+            const input = document.getElementById('ping-target');
+            const btn = document.getElementById('btn-custom-ping');
+            const term = document.getElementById('ping-terminal');
+            const targetRaw = input.value.trim();
+
+            if(!targetRaw) return;
+
+            let target = targetRaw;
+            if(target.startsWith('http://')) target = target.replace('http://', '');
+            if(target.startsWith('https://')) target = target.replace('https://', '');
+
+            input.disabled = true;
+            btn.disabled = true;
+            btn.textContent = '...';
+
+            term.innerHTML = `A disparar contra ${target} com 32 bytes de dados (Ping HTTP):\n\n`;
+
+            let successCount = 0;
+            let minTime = 9999;
+            let maxTime = 0;
+            let totalTime = 0;
+
+            for(let i=0; i<4; i++) {
+                const start = performance.now();
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000); 
+                    
+                    await fetch('https://' + target + '?ping=' + start, { mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+                    clearTimeout(timeoutId);
+
+                    const end = performance.now();
+                    const time = Math.round(end - start);
+
+                    term.innerHTML += `Resposta de ${target}: tempo=${time}ms\n`;
+                    
+                    if(time < minTime) minTime = time;
+                    if(time > maxTime) maxTime = time;
+                    totalTime += time;
+                    successCount++;
+                } catch(e) {
+                    term.innerHTML += `Esgotado o tempo limite do pedido.\n`;
+                }
+                
+                term.scrollTop = term.scrollHeight;
+                if(i < 3) await new Promise(r => setTimeout(r, 1000));
+            }
+
+            term.innerHTML += `\nEstatísticas de ping para ${target}:\n`;
+            term.innerHTML += `    Pacotes: Enviados = 4, Recebidos = ${successCount}, Perdidos = ${4 - successCount}\n`;
+            
+            if(successCount > 0) {
+                term.innerHTML += `Aproximação de tempo de ida e volta em milissegundos:\n`;
+                term.innerHTML += `    Mínimo = ${minTime}ms, Máximo = ${maxTime}ms, Média = ${Math.round(totalTime/successCount)}ms\n`;
+            }
+
+            term.scrollTop = term.scrollHeight;
+            input.disabled = false;
+            btn.disabled = false;
+            btn.textContent = 'PING';
+        }
+
+        async function runSpeedTest() {
+            const btn = document.getElementById('btn-speed');
+            const display = document.getElementById('speed-value');
+
+            btn.disabled = true;
+            btn.textContent = 'A TESTAR...';
+            display.innerHTML = '<span style="font-size: 0.7em; color: #888; animation: pulse-border 1s infinite alternate;">Calculando...</span>';
+
+            const startTime = performance.now();
+            try {
+                const res = await fetch('https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg?cb=' + startTime);
+                const blob = await res.blob();
+                
+                const endTime = performance.now();
+                const durationSeconds = (endTime - startTime) / 1000;
+                const bitsLoaded = blob.size * 8;
+                const speedMbps = (bitsLoaded / durationSeconds / 1024 / 1024).toFixed(2);
+                
+                display.innerHTML = `${speedMbps} Mbps <span style="font-size:0.5em; color:#4caf50; margin-left:8px;">✓ CONCLUÍDO</span>`;
+            } catch (e) {
+                display.innerHTML = '<span style="color:#ff5252">FALHA NA LIGAÇÃO</span>';
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'REPETIR TESTE';
+        }
+
+        async function checkLocalRouter() {
+            try {
+                const start = performance.now();
+                await fetch(`http://${config.routerIp}`, { mode: 'no-cors', cache: 'no-store' });
+                const end = performance.now();
+                document.getElementById('router-status').innerHTML = `<span style="color:#4caf50">ONLINE (${Math.round(end - start)}ms)</span>`;
+            } catch(e) {
+                document.getElementById('router-status').innerHTML = '<span style="color:#ff5252">OFFLINE / TIMEOUT</span>';
+            }
+        }
+
+        function updateRouterIp(newIp) {
+            config.routerIp = newIp || '192.168.88.1';
+            localStorage.setItem('routerIp', config.routerIp);
+            document.getElementById('lbl-router-ip').textContent = config.routerIp;
+        }
+
         let isHourlyView = false;
         function toggleWeatherView() {
             isHourlyView = !isHourlyView;
@@ -474,15 +575,9 @@
             document.getElementById('hourly-grid').style.display = isHourlyView ? 'flex' : 'none';
             document.getElementById('weather-title').textContent = isHourlyView ? 'PREVISÃO: HOJE' : 'PREVISÃO: SEMANA';
             document.getElementById('btn-toggle-weather').textContent = isHourlyView ? 'VER SEMANA' : 'VER HOJE';
-            
             const btn = document.getElementById('btn-toggle-weather');
-            if(isHourlyView) {
-                btn.style.background = 'var(--accent-color)';
-                btn.style.color = '#000';
-            } else {
-                btn.style.background = 'transparent';
-                btn.style.color = 'var(--accent-color)';
-            }
+            if(isHourlyView) { btn.style.background = 'var(--accent-color)'; btn.style.color = '#000'; } 
+            else { btn.style.background = 'transparent'; btn.style.color = 'var(--accent-color)'; }
         }
         
         function showTab(tab, event) {
@@ -507,77 +602,54 @@
         }
 
         function changeColorManual(newColor) {
-            config.accentColor = newColor;
-            localStorage.setItem('accentColor', newColor);
-            config.isManual = true;
-            document.getElementById('check-manual').checked = true;
-            localStorage.setItem('isManual', 'true');
-            aplicarCor(newColor);
+            config.accentColor = newColor; localStorage.setItem('accentColor', newColor);
+            config.isManual = true; document.getElementById('check-manual').checked = true;
+            localStorage.setItem('isManual', 'true'); aplicarCor(newColor);
         }
 
         function atualizarRegiaoNoticias(novaRegiao) {
-            config.newsRegion = novaRegiao;
-            localStorage.setItem('newsRegion', novaRegiao);
+            config.newsRegion = novaRegiao; localStorage.setItem('newsRegion', novaRegiao);
             document.getElementById('news-ticker').innerHTML = `<span>ATUALIZANDO FEED PARA: ${novaRegiao.toUpperCase()}...</span>`;
             fetchNews();
         }
 
-        // MOTOR DO RADAR GLOBAL
         async function checkSystems() {
             const grid = document.getElementById('downdetector-grid');
             if(!grid) return;
-            
             grid.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; color:var(--accent-color); font-size:0.8rem; padding: 20px; animation: pulse-border 1s infinite alternate;">A ESTABELECER LIGAÇÃO COM SERVIDORES...</div>';
-            
             let cards = [];
-            
-            // Usamos Promise.allSettled para fazer as chamadas todas em simultâneo (mais rápido)
             const fetchPromises = systemsToMonitor.map(sys => 
                 fetch(sys.url).then(r => r.json()).then(data => ({ sys, data, error: false }))
                 .catch(err => ({ sys, error: true }))
             );
-
             const results = await Promise.allSettled(fetchPromises);
-            
             results.forEach(result => {
                 if (result.status === 'fulfilled' && !result.value.error) {
                     const status = result.value.data.status.indicator; 
                     const name = result.value.sys.name;
-                    
-                    let cssClass = 'ind-online'; 
-                    let statusText = 'OK';
-                    
+                    let cssClass = 'ind-online'; let statusText = 'OK';
                     if (status === 'minor') { cssClass = 'ind-warning'; statusText = 'LENTO'; }
                     else if (status === 'major' || status === 'critical') { cssClass = 'ind-offline'; statusText = 'OFFLINE'; }
-
-                    cards.push(`
-                        <div class="status-card">
-                            <span class="status-name">${name}</span>
-                            <span class="status-indicator ${cssClass}">${statusText}</span>
-                        </div>
-                    `);
+                    cards.push(`<div class="status-card"><span class="status-name">${name}</span><span class="status-indicator ${cssClass}">${statusText}</span></div>`);
                 } else {
                     const name = result.value ? result.value.sys.name : "Desconhecido";
-                    cards.push(`
-                        <div class="status-card" style="opacity:0.5;">
-                            <span class="status-name">${name}</span>
-                            <span class="status-indicator" style="background:#444; color:#fff;">FALHA</span>
-                        </div>
-                    `);
+                    cards.push(`<div class="status-card" style="opacity:0.5;"><span class="status-name">${name}</span><span class="status-indicator" style="background:#444; color:#fff;">FALHA</span></div>`);
                 }
             });
-            
             grid.innerHTML = cards.join('');
         }
 
         async function init() {
+            // Regra de migração automática para aplicar o Midnight equilibrado caso tenha o escuro ou muito claro guardados na cache
+            if (config.accentColor === '#241832' || config.accentColor === '#7c4dff') {
+                config.accentColor = '#5e35b1';
+                localStorage.setItem('accentColor', '#5e35b1');
+            }
+
             initCanvas(); animate();
-            
             [1,2,3].forEach(i => {
                 const s = document.getElementById(`tz-${i}`);
-                if(s.options.length === 0) {
-                    zones.forEach(z => s.add(new Option(z.n, z.v)));
-                }
+                if(s.options.length === 0) { zones.forEach(z => s.add(new Option(z.n, z.v))); }
                 s.value = config.tz[i-1];
                 s.onchange = (e) => { config.tz[i-1] = e.target.value; localStorage.setItem(`tz${i}`, e.target.value); };
             });
@@ -586,6 +658,7 @@
             document.getElementById('check-ms').checked = config.showMs;
             document.getElementById('check-manual').checked = config.isManual;
             document.getElementById('select-color').value = config.accentColor;
+            document.getElementById('input-router-ip').value = config.routerIp;
             
             const inputRegion = document.getElementById('input-news-region');
             const listRegion = document.getElementById('autocomplete-list');
@@ -593,28 +666,18 @@
             
             let debounceTimer;
             inputRegion.addEventListener('input', function() {
-                clearTimeout(debounceTimer);
-                const val = this.value.trim();
-                listRegion.innerHTML = '';
-                
+                clearTimeout(debounceTimer); const val = this.value.trim(); listRegion.innerHTML = '';
                 if (val.length < 3) return; 
-
                 debounceTimer = setTimeout(async () => {
                     try {
                         const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(val)}&count=5&language=pt&format=json`);
                         const data = await res.json();
-                        
                         if (data.results) {
                             data.results.forEach(city => {
                                 let item = document.createElement('div');
                                 let state = city.admin1 ? ` - ${city.admin1}` : '';
                                 item.innerHTML = `<strong>${city.name}</strong>${state} (${city.country})`;
-                                
-                                item.onclick = () => {
-                                    inputRegion.value = city.name; 
-                                    listRegion.innerHTML = ''; 
-                                    atualizarRegiaoNoticias(city.name); 
-                                };
+                                item.onclick = () => { inputRegion.value = city.name; listRegion.innerHTML = ''; atualizarRegiaoNoticias(city.name); };
                                 listRegion.appendChild(item);
                             });
                         }
@@ -622,48 +685,26 @@
                 }, 400); 
             });
 
-            inputRegion.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    listRegion.innerHTML = '';
-                    atualizarRegiaoNoticias(this.value.trim() || 'Brasil');
-                }
-            });
-            
+            inputRegion.addEventListener('keypress', function(e) { if (e.key === 'Enter') { listRegion.innerHTML = ''; atualizarRegiaoNoticias(this.value.trim() || 'Brasil'); } });
             document.getElementById('check-24h').onchange = (e) => { config.is24h = e.target.checked; localStorage.setItem('is24h', config.is24h); };
             document.getElementById('check-ms').onchange = (e) => { config.showMs = e.target.checked; localStorage.setItem('showMs', config.showMs); };
-            
             document.getElementById('notes-area').value = localStorage.getItem('user_notes') || '';
             document.getElementById('notes-area').oninput = (e) => localStorage.setItem('user_notes', e.target.value);
             
             renderTasks();
-            
             if (config.isManual) { aplicarCor(config.accentColor); }
             document.getElementById('current-year').textContent = new Date().getFullYear();
 
-            sincronizarTime();
-            updateRelogio();
-            fetchFinance();
-            fetchIP();
-            fetchNews();
-            buscarClima();
-            monitorBateria();
-            checkNet();
+            sincronizarTime(); updateRelogio(); fetchFinance(); fetchIP(); fetchNews(); buscarClima(); monitorBateria(); checkNet();
         }
 
         function updateRelogio() {
-            const agora = new Date(Date.now() + offsetGlobal);
-            const h = agora.getHours();
-            
-            if(!config.isManual) {
-                aplicarCor(h >= 18 || h < 6 ? '#b377ff' : '#ffbf00'); 
-            }
-
-            const is24h = config.is24h;
-            const hDisp = is24h ? String(h).padStart(2,'0') : (h % 12 || 12);
+            const agora = new Date(Date.now() + offsetGlobal); const h = agora.getHours();
+            if(!config.isManual) { aplicarCor(h >= 18 || h < 6 ? '#b377ff' : '#ffbf00'); }
+            const is24h = config.is24h; const hDisp = is24h ? String(h).padStart(2,'0') : (h % 12 || 12);
             document.getElementById('tempo-principal').textContent = `${hDisp}:${String(agora.getMinutes()).padStart(2,'0')}:${String(agora.getSeconds()).padStart(2,'0')}`;
             document.getElementById('ms-display').textContent = '.' + String(agora.getMilliseconds()).padStart(3,'0');
             document.getElementById('ms-display').style.visibility = config.showMs ? 'visible' : 'hidden';
-            
             [1,2,3].forEach(i => {
                 const s = document.getElementById(`tz-${i}`);
                 document.getElementById(`time-${i}`).textContent = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone: s.value, hour12:!is24h }).format(agora);
@@ -678,56 +719,29 @@
                     const resLoc = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
                     const dLoc = await resLoc.json();
                     document.getElementById('loc-txt').textContent = (dLoc.address.city || dLoc.address.town || "DETECTADO").toUpperCase();
-
                     const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true&daily=weathercode,temperature_2m_max&hourly=temperature_2m,precipitation_probability,weathercode&timezone=auto`);
                     const d = await r.json();
-                    
                     document.getElementById('temp-txt').textContent = `${Math.round(d.current_weather.temperature)}°C`;
-                    // Comentado para não poluir o ecrã principal:
-                    // document.getElementById('wind-txt').textContent = `${d.current_weather.windspeed} KM/H`;
-                    // document.getElementById('hum-txt').textContent = `${d.current_weather.relative_humidity_2m || '--'}%`;
-
                     const icons = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 51: '🌧️', 61: '🌧️', 80: '🌦️', 95: '⛈️' };
-                    
-                    const forecastDiv = document.getElementById('forecast-grid');
-                    let htmlSemana = "";
+                    const forecastDiv = document.getElementById('forecast-grid'); let htmlSemana = "";
                     for(let i = 1; i < 7; i++) {
                         const dataObj = new Date(d.daily.time[i] + 'T00:00:00');
                         const diaSemana = dataObj.toLocaleDateString('pt-BR', {weekday:'short'}).toUpperCase().replace('.','');
                         const dataFormatada = dataObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
                         const icon = icons[d.daily.weathercode[i]] || '🌤️';
-                        
-                        htmlSemana += `
-                        <div class="forecast-item">
-                            <div class="forecast-day-name">${diaSemana}</div>
-                            <div class="forecast-date">${dataFormatada}</div>
-                            <span class="forecast-icon">${icon}</span>
-                            <div class="forecast-temp">${Math.round(d.daily.temperature_2m_max[i])}°</div>
-                        </div>`;
+                        htmlSemana += `<div class="forecast-item"><div class="forecast-day-name">${diaSemana}</div><div class="forecast-date">${dataFormatada}</div><span class="forecast-icon">${icon}</span><div class="forecast-temp">${Math.round(d.daily.temperature_2m_max[i])}°</div></div>`;
                     }
                     forecastDiv.innerHTML = htmlSemana;
-
-                    const hourlyDiv = document.getElementById('hourly-grid');
-                    let htmlHora = "";
-                    const horaAtual = new Date().getHours();
-                    
+                    const hourlyDiv = document.getElementById('hourly-grid'); let htmlHora = ""; const horaAtual = new Date().getHours();
                     for(let i = horaAtual; i < horaAtual + 12; i++) {
                         const timeObj = new Date(d.hourly.time[i]);
                         const horaFormatada = timeObj.getHours().toString().padStart(2, '0') + ':00';
                         const iconHora = icons[d.hourly.weathercode[i]] || '🌤️';
                         const tempHora = Math.round(d.hourly.temperature_2m[i]);
                         const probChuva = d.hourly.precipitation_probability[i];
-
-                        htmlHora += `
-                        <div class="forecast-item">
-                            <div class="forecast-day-name">${horaFormatada}</div>
-                            <span class="forecast-icon">${iconHora}</span>
-                            <div class="forecast-temp">${tempHora}°</div>
-                            <div class="forecast-rain">💧 ${probChuva}%</div>
-                        </div>`;
+                        htmlHora += `<div class="forecast-item"><div class="forecast-day-name">${horaFormatada}</div><span class="forecast-icon">${iconHora}</span><div class="forecast-temp">${tempHora}°</div><div class="forecast-rain">💧 ${probChuva}%</div></div>`;
                     }
                     hourlyDiv.innerHTML = htmlHora;
-
                 } catch(e) {}
             });
         }
@@ -736,50 +750,29 @@
             try {
                 const r = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,GBP-BRL,BTC-USD,BRL-USD', { cache: 'no-store' });
                 const d = await r.json();
-                
-                rawRates.USD = parseFloat(d.USDBRL.bid); 
-                rawRates.EUR = parseFloat(d.EURBRL.bid);
-                
+                rawRates.USD = parseFloat(d.USDBRL.bid); rawRates.EUR = parseFloat(d.EURBRL.bid);
                 const getTrend = (pctStr) => {
-                    const pct = parseFloat(pctStr);
-                    if (isNaN(pct)) return '';
-                    const isUp = pct > 0;
-                    return `<span class="${isUp ? 'trend-up' : 'trend-down'}">${isUp ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%</span>`;
+                    const pct = parseFloat(pctStr); if (isNaN(pct)) return '';
+                    return `<span class="${pct > 0 ? 'trend-up' : 'trend-down'}">${pct > 0 ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%</span>`;
                 };
-                
                 document.getElementById('v-brl').innerHTML = `$ ${parseFloat(d.BRLUSD.bid).toFixed(2)} <br>${getTrend(d.BRLUSD.pctChange)}`;
                 document.getElementById('v-usd').innerHTML = `R$ ${parseFloat(d.USDBRL.bid).toFixed(2)} <br>${getTrend(d.USDBRL.pctChange)}`;
                 document.getElementById('v-eur').innerHTML = `R$ ${parseFloat(d.EURBRL.bid).toFixed(2)} <br>${getTrend(d.EURBRL.pctChange)}`;
                 document.getElementById('v-gbp').innerHTML = `R$ ${parseFloat(d.GBPBRL.bid).toFixed(2)} <br>${getTrend(d.GBPBRL.pctChange)}`;
                 document.getElementById('v-btc').innerHTML = `$${Math.round(d.BTCUSD.bid/1000)}K <br>${getTrend(d.BTCUSD.pctChange)}`;
-                
                 convert();
             } catch(e) {}
         }
 
         function convert() { 
-            let v = parseFloat(document.getElementById('converter-input').value) || 0; 
-            let base = document.getElementById('calc-base').value;
-            
-            let lbl1 = document.getElementById('c-lbl-1');
-            let val1 = document.getElementById('c-val-1');
-            let lbl2 = document.getElementById('c-lbl-2');
-            let val2 = document.getElementById('c-val-2');
-
+            let v = parseFloat(document.getElementById('converter-input').value) || 0; let base = document.getElementById('calc-base').value;
+            let lbl1 = document.getElementById('c-lbl-1'); let val1 = document.getElementById('c-val-1');
+            let lbl2 = document.getElementById('c-lbl-2'); let val2 = document.getElementById('c-val-2');
             let valueInBRL = v;
-            if (base === 'USD') valueInBRL = v * rawRates.USD;
-            if (base === 'EUR') valueInBRL = v * rawRates.EUR;
-
-            if(base === 'BRL') {
-                lbl1.textContent = 'USD'; val1.textContent = (valueInBRL / rawRates.USD).toFixed(2);
-                lbl2.textContent = 'EUR'; val2.textContent = (valueInBRL / rawRates.EUR).toFixed(2);
-            } else if(base === 'USD') {
-                lbl1.textContent = 'BRL'; val1.textContent = valueInBRL.toFixed(2);
-                lbl2.textContent = 'EUR'; val2.textContent = (valueInBRL / rawRates.EUR).toFixed(2);
-            } else if(base === 'EUR') {
-                lbl1.textContent = 'BRL'; val1.textContent = valueInBRL.toFixed(2);
-                lbl2.textContent = 'USD'; val2.textContent = (valueInBRL / rawRates.USD).toFixed(2);
-            }
+            if (base === 'USD') valueInBRL = v * rawRates.USD; if (base === 'EUR') valueInBRL = v * rawRates.EUR;
+            if(base === 'BRL') { lbl1.textContent = 'USD'; val1.textContent = (valueInBRL / rawRates.USD).toFixed(2); lbl2.textContent = 'EUR'; val2.textContent = (valueInBRL / rawRates.EUR).toFixed(2); } 
+            else if(base === 'USD') { lbl1.textContent = 'BRL'; val1.textContent = valueInBRL.toFixed(2); lbl2.textContent = 'EUR'; val2.textContent = (valueInBRL / rawRates.EUR).toFixed(2); } 
+            else if(base === 'EUR') { lbl1.textContent = 'BRL'; val1.textContent = valueInBRL.toFixed(2); lbl2.textContent = 'USD'; val2.textContent = (valueInBRL / rawRates.USD).toFixed(2); }
         }
 
         function renderTasks() {
@@ -789,25 +782,16 @@
         
         function generatePass() {
             const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-            let p = ""; 
-            for(let i=0; i<16; i++) {
-                p += c.charAt(Math.floor(Math.random() * c.length));
-            }
+            let p = ""; for(let i=0; i<16; i++) { p += c.charAt(Math.floor(Math.random() * c.length)); }
             document.getElementById('generated-pass').textContent = p;
         }
 
         function copyPassword() {
-            const passEl = document.getElementById('generated-pass');
-            const passText = passEl.textContent;
-            
+            const passEl = document.getElementById('generated-pass'); const passText = passEl.textContent;
             if (passText && passText !== '********' && passText !== 'COPIADA!') {
                 navigator.clipboard.writeText(passText).then(() => {
-                    passEl.style.color = '#4caf50';
-                    passEl.textContent = 'COPIADA!';
-                    setTimeout(() => {
-                        passEl.style.color = 'var(--accent-color)';
-                        passEl.textContent = passText;
-                    }, 1000);
+                    passEl.style.color = '#4caf50'; passEl.textContent = 'COPIADA!';
+                    setTimeout(() => { passEl.style.color = 'var(--accent-color)'; passEl.textContent = passText; }, 1000);
                 });
             }
         }
@@ -829,20 +813,13 @@
                     const u = () => { document.getElementById('bat-txt').textContent = `🔋 BATERIA: ${Math.round(b.level * 100)}% ${b.charging ? '⚡' : ''}`; }; 
                     b.onlevelchange = u; b.onchargingchange = u; u(); 
                 } catch(e) {}
-            } else {
-                document.getElementById('bat-txt').style.display = 'none';
-            }
+            } else { document.getElementById('bat-txt').style.display = 'none'; }
         }
         async function fetchIP() { try { const r = await fetch('https://api.ipify.org?format=json'); const d = await r.json(); document.getElementById('ip-txt').textContent = d.ip; } catch(e){} }
         function checkNet() { const dot = document.getElementById('net-dot'); if(navigator.onLine) { dot.classList.add('status-online'); document.getElementById('net-status').textContent = "ONLINE"; } else { dot.classList.remove('status-online'); document.getElementById('net-status').textContent = "OFFLINE"; } }
         async function sincronizarTime() { try { const r = await fetch('https://worldtimeapi.org/api/timezone/America/Recife'); const d = await r.json(); offsetGlobal = new Date(d.datetime).getTime() - Date.now(); } catch(e) {} }
         
-        document.addEventListener('click', function(e) {
-            if (e.target.id !== 'input-news-region') {
-                document.getElementById('autocomplete-list').innerHTML = '';
-            }
-        });
-
+        document.addEventListener('click', function(e) { if (e.target.id !== 'input-news-region') { document.getElementById('autocomplete-list').innerHTML = ''; } });
         window.addEventListener('online', checkNet); window.addEventListener('offline', checkNet);
 
         async function fetchNews() { 
@@ -850,29 +827,14 @@
                 const cidade = config.newsRegion;
                 const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cidade)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
                 const apiPonte = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-
-                const r = await fetch(apiPonte, { cache: 'no-store' }); 
-                const d = await r.json(); 
-
-                if(d.status === 'ok' && d.items.length > 0) {
-                    document.getElementById('news-ticker').innerHTML = d.items.map(n => 
-                        `<span>[${cidade.toUpperCase()}] ${n.title.toUpperCase()}</span>`
-                    ).join(''); 
-                } else {
-                    document.getElementById('news-ticker').innerHTML = `<span>NENHUMA NOTÍCIA RECENTE ENCONTRADA PARA: ${cidade.toUpperCase()}</span>`;
-                }
-            } catch(e) { 
-                console.log(e);
-                document.getElementById('news-ticker').innerHTML = "<span>ERRO AO CONECTAR AO FEED GLOBAL DE NOTÍCIAS. TENTANDO NOVAMENTE...</span>";
-            } 
+                const r = await fetch(apiPonte, { cache: 'no-store' }); const d = await r.json(); 
+                if(d.status === 'ok' && d.items.length > 0) { document.getElementById('news-ticker').innerHTML = d.items.map(n => `<span>[${cidade.toUpperCase()}] ${n.title.toUpperCase()}</span>`).join(''); } 
+                else { document.getElementById('news-ticker').innerHTML = `<span>NENHUMA NOTÍCIA RECENTE ENCONTRADA PARA: ${cidade.toUpperCase()}</span>`; }
+            } catch(e) { document.getElementById('news-ticker').innerHTML = "<span>ERRO AO CONECTAR AO FEED GLOBAL DE NOTÍCIAS. TENTANDO NOVAMENTE...</span>"; } 
         }
         
         window.onresize = initCanvas;
-        
-        init();
-        setInterval(fetchFinance, 60000); 
-        setInterval(fetchNews, 300000); 
-        setInterval(sincronizarTime, 600000);
+        init(); setInterval(fetchFinance, 60000); setInterval(fetchNews, 300000); setInterval(sincronizarTime, 600000);
     </script>
 </body>
 </html>
